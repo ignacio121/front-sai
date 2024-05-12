@@ -1,31 +1,19 @@
-import './App.css';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import Login from './pages/login.jsx';
+import DirectorPage from './pages/direccion.jsx';
+import EstudiantePage from './pages/estudiante.jsx';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import './App.css'
 
 function App() {
-
-  const [state1, setState1] = useState(false);
-
-
-  const get = async ()=> {
-    setState1(true);
-    const res = await axios.get("https://localhost:3000");
-  }
-  
   return (
-    <div className="App">
-      <h1>
-        Hola buenas
-      </h1>
-      <button onClick={()=>get()}>
-        Click
-      </button>
-      {state1===true &&(
-        <h1>
-          Funco?
-        </h1>
-      )}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/direccion" element={<DirectorPage />} />
+        <Route path="/estudiante" element={<EstudiantePage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

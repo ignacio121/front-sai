@@ -1,15 +1,14 @@
 {
   "files": {
-    "main.css": "/front-sai/build/static/css/main.f855e6bc.css",
-    "main.js": "/front-sai/build/static/js/main.84714b3b.js",
-    "static/js/453.659abac9.chunk.js": "/front-sai/build/static/js/453.659abac9.chunk.js",
+    "main.css": "/front-sai/build/static/css/main.e08be396.css",
+    "main.js": "/front-sai/build/static/js/main.e0e5b0ac.js",
+    "static/media/img0.jpg": "/front-sai/build/static/media/img0.f406b467064741c2fb03.jpg",
     "index.html": "/front-sai/build/index.html",
-    "main.f855e6bc.css.map": "/front-sai/build/static/css/main.f855e6bc.css.map",
-    "main.84714b3b.js.map": "/front-sai/build/static/js/main.84714b3b.js.map",
-    "453.659abac9.chunk.js.map": "/front-sai/build/static/js/453.659abac9.chunk.js.map"
+    "main.e08be396.css.map": "/front-sai/build/static/css/main.e08be396.css.map",
+    "main.e0e5b0ac.js.map": "/front-sai/build/static/js/main.e0e5b0ac.js.map"
   },
   "entrypoints": [
-    "static/css/main.f855e6bc.css",
-    "static/js/main.84714b3b.js"
+    "static/css/main.e08be396.css",
+    "static/js/main.e0e5b0ac.js"
   ]
 }
