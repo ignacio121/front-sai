@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Contenedor, ContenedorForm, LoginText, Titulo, Form, InputContainer, Input, ButtonContainer, Button} from '../style/login';
+import { Contenedor, ContenedorForm, LoginText, Titulo, Form, InputContainer, Input, ButtonContainer, Button} from '../style/login.style.js';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
-    const { login, user, token, alumnoInfo } = useAuth();
+    const { login, sesion, token } = useAuth();
     const navigate = useNavigate();
     const [Rut,setRut] = useState("");
     const [Password, setPassword] = useState("");
@@ -15,13 +15,13 @@ const Login = () => {
     };
 
     useEffect (() => {
-        if (user && user.userType === "alumno"){
+        if (sesion && sesion.userType === "alumno"){
             navigate('/estudiante');
         }
-        else if (user && user.userType === "director"){
-            navigate('/director');
+        else if (sesion && sesion.userType === "personal"){
+            navigate('/personal');
         };
-    }, [user,navigate,token,alumnoInfo]);
+    }, [sesion,navigate,token]);
 
     return (
         <Contenedor>

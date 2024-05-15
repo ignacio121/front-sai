@@ -1,6 +1,6 @@
 import React from 'react';
 import Login from './pages/login.jsx';
-import DirectorPage from './pages/direccion.jsx';
+import PersonalPage from './pages/personal.jsx';
 import EstudiantePage from './pages/estudiante.jsx';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css'
@@ -12,8 +12,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/direccion" element={<DirectorPage />} />
-          <Route path="/estudiante" element={<EstudiantePage />} />
+            <Route path="/personal" element={<PersonalPage />} />
+            <Route path="/estudiante" element={<EstudiantePage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Complete, NavbarLat, NavbarSup } from '../style/personal.style.js';
 
-function EstudiantePage() {
+function PersonalPage() {
   const navigate = useNavigate();
   const { token , userInfo, logout } = useAuth();
 
@@ -14,17 +15,17 @@ function EstudiantePage() {
   }, [token, userInfo, navigate]);
   
   return (
-    <div>
+    <Complete>
       {token ? (
-        <div>
-          <h1>Estudiante Page</h1>
-          <button onClick={logout}>Logout</button>
-        </div>
+        <NavbarSup>
+          <NavbarLat>
+          </NavbarLat>
+        </NavbarSup>
       ) : (
         <p>Acceso denegado. Por favor, inicia sesión para acceder a esta página.</p>
       )}
-    </div>
+    </Complete>
   );
 }
 
-export default EstudiantePage;
+export default PersonalPage;
