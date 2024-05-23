@@ -2,8 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 
 
-//const URI = 'https://backend-s-a-p-s.vercel.app';
-const URI = 'http://localhost:3001'
+const URI = 'https://backend-s-a-p-s.vercel.app';
 
 const AuthContext = createContext();
 
@@ -67,7 +66,6 @@ export const AuthProvider = ({ children }) => {
       console.error('Error: No es posible obtener la información del alumno', error);
     }
   };
-
 
   return (
     <AuthContext.Provider value={{ sesion, token, userInfo, login, logout }}>

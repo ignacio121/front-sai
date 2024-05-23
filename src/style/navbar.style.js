@@ -14,7 +14,6 @@ export const NavbarSup = styled.div`
     width: 100%;
     height: 60px;
     background-color: rgb(26, 77, 171);
-    z-index:1;
 `;
 
 export const NavbarLat = styled.div`
