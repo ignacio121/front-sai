@@ -2,8 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 
 
-//const URI = 'https://backend-s-a-p-s.vercel.app';
-const URI = 'http://localhost:3001'
+const URI = 'https://backend-s-a-p-s.vercel.app';
+//const URI = 'http://localhost:3000'
 
 const AuthContext = createContext();
 

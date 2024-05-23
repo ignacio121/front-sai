@@ -1,16 +1,22 @@
 /* styles.css */
 
-body {
+html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
+}
+
+body {
   background-image: url('./images/img0.jpg');
   background-size: cover;
   background-position: center;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
 }
 
-/* Otros estilos */
+.MainContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding-right: 5%; 
+}
