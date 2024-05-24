@@ -8,9 +8,10 @@ import {
   
   const initialState = {
     loading: false,
-    isAuthenticated: false,
+    isAuthenticated: !!localStorage.getItem('token'),
+    sesion: null,
     user: null,
-    token: null,
+    token:  localStorage.getItem('token') || null,
     error: null,
   };
   
@@ -27,7 +28,8 @@ import {
           ...state,
           loading: false,
           isAuthenticated: true,
-          user: action.payload,
+          sesion: action.payload.sesion,
+          user: action.payload.user,
           token: action.payload.token,
           error: null,
         };
@@ -41,7 +43,7 @@ import {
           error: action.error,
         };
       case LOGOUT:
-        return { ...state, token: null, user: null, isAuthenticated: false };
+        return { ...state, token: null, user: null, isAuthenticated: false, sesion: null };
       default:
         return state;
     }
