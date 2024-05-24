@@ -8,7 +8,7 @@ import { Contenedor, ContenedorForm, LoginText, Titulo, Form, InputContainer, In
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, isAuthenticated, user, error, sesion } = useSelector((state) => state.auth);
+  const { loading, isAuthenticated, error, sesion } = useSelector((state) => state.auth);
 
   const [Rut, setRut] = useState('');
   const [Password, setPassword] = useState('');
@@ -19,8 +19,6 @@ function Login() {
   };
 
   useEffect(() => {
-    console.log(sesion)
-    console.log(user)
     if (isAuthenticated) {
         if (sesion.userType === "alumno"){
             navigate('/estudiante');
@@ -29,7 +27,7 @@ function Login() {
             navigate('/personal');
         };
     }
-  }, [isAuthenticated, user, sesion, navigate]);
+  }, [isAuthenticated, sesion, navigate]);
 
   return (
     <Contenedor>
