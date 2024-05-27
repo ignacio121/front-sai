@@ -3,18 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Barra from '../components/Barra';
 import Estudiante from '../components/estudiante'; 
-import Options  from '../components/options';
+import Options from '../components/options';
 import Anuncios from '../components/anuncios';
+import { getCategorias } from '../Redux/actions/authActions';
 
 function EstudiantePage() {
   const navigate = useNavigate();
-  const { user, token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { user, token, categorias, loading, error } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (!token) {
       navigate('/');
+    } else {
+      dispatch(getCategorias());
     }
-  }, [token, navigate]);
+  }, [token, navigate, dispatch]);
+
+  useEffect(() => {
+    console.log('Categorías:', categorias);
+  }, [categorias]);
 
   return (
     <div>
@@ -27,12 +35,17 @@ function EstudiantePage() {
               <Estudiante 
                 nombre={user?.nombre} 
                 apellido={user?.apellido}
-                rut ={user?.rut}
-                email ={user?.email}
+                rut={user?.rut}
+                email={user?.email}
                 foto={user?.foto}
-                carrera ={user?.carrera['nombre']}
+                carrera={user?.carrera['nombre']}
               />
-              <Options />
+              <Options categorias={categorias} />
+              {loading ? (
+                <p>Cargando categorías...</p>
+              ) : error ? (
+                <p>Error al cargar categorías: {error.message}</p>
+              ) : null}
             </div>
           </div>
         </>
