@@ -1,22 +1,28 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
 import Barra from '../components/Barra';
 import Estudiante from '../components/estudiante'; 
-import Options  from '../components/options';
+import Options from '../components/options';
 import Anuncios from '../components/anuncios';
+import { getCategorias } from '../Redux/actions/authActions';
 
 function EstudiantePage() {
-  const { token, userInfo } = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user, token, categorias, loading, error } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (!token) {
       navigate('/');
+    } else {
+      dispatch(getCategorias());
     }
-    console.log(userInfo)
-    console.log(userInfo?.nombre, userInfo?.apellido,userInfo?.rut, userInfo?.foto); 
-  }, [token, userInfo, navigate]);
+  }, [token, navigate, dispatch]);
+
+  useEffect(() => {
+    console.log('Categorías:', categorias);
+  }, [categorias]);
 
   return (
     <div>
@@ -27,14 +33,19 @@ function EstudiantePage() {
             <Anuncios />
             <div style={{ marginLeft: '50px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
               <Estudiante 
-                nombre={userInfo?.nombre} 
-                apellido={userInfo?.apellido}
-                rut ={userInfo?.rut}
-                email ={userInfo?.email}
-                foto={userInfo?.foto}
-                carrera ={userInfo?.carrera['nombre']}
+                nombre={user?.nombre} 
+                apellido={user?.apellido}
+                rut={user?.rut}
+                email={user?.email}
+                foto={user?.foto}
+                carrera={user?.carrera['nombre']}
               />
-              <Options />
+              <Options categorias={categorias} />
+              {loading ? (
+                <p>Cargando categorías...</p>
+              ) : error ? (
+                <p>Error al cargar categorías: {error.message}</p>
+              ) : null}
             </div>
           </div>
         </>

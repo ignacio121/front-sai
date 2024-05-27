@@ -1,12 +1,20 @@
 import React from 'react';
 import styled from 'styled-components';
 import logoBarra from '../images/logo_ucm_white.png';
-import { useAuth } from '../context/AuthContext'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../Redux/actions/authActions';
 
 const Barra = () => {
-  const { logout } = useAuth(); 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/');
+  };
 
   return (
     <>
@@ -14,7 +22,7 @@ const Barra = () => {
         <ImageTextContainer>
           <Escudo src={logoBarra} alt="logo" />
           <Titulo>SISTEMA DE ADMINISTRACIÓN DE INCIDENCIAS UCM</Titulo>
-          <LogoutButton onClick={logout}>
+          <LogoutButton onClick={handleLogout}>
             <FontAwesomeIcon icon={faArrowRightFromBracket} size="lg" />
             <ButtonText>Cerrar sesión</ButtonText>
           </LogoutButton>

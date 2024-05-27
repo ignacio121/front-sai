@@ -1,30 +1,36 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Complete, NavbarLat, NavbarSup } from '../style/personal.style.js';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../Redux/actions/authActions';
+import NavBar from '../components/navbar';
+
 
 function PersonalPage() {
   const navigate = useNavigate();
-  const { token , userInfo, logout } = useAuth();
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
     if (!token) {
       navigate('/');
     }
-    console.log(userInfo);
-  }, [token, userInfo, navigate]);
+  }, [token, navigate]);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/');
+  };
   
   return (
-    <Complete>
+    <>
       {token ? (
-        <NavbarSup>
-          <NavbarLat>
-          </NavbarLat>
-        </NavbarSup>
+        <NavBar>
+          <button onClick={handleLogout}>Logout</button>
+        </NavBar>
       ) : (
         <p>Acceso denegado. Por favor, inicia sesión para acceder a esta página.</p>
       )}
-    </Complete>
+    </>
   );
 }
 
