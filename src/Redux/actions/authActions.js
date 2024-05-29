@@ -33,6 +33,7 @@ export const login = (rut, contraseña) => async (dispatch) => {
     } 
 
     const sesion = { userId, userType, rol, carrera_id };
+    localStorage.setItem('sesion', JSON.stringify(sesion));
 
     dispatch({ type: LOGIN_SUCCESS, payload: { token, sesion, user: userResponse } });
 
@@ -46,5 +47,6 @@ export const login = (rut, contraseña) => async (dispatch) => {
 
 export const logout = () => (dispatch) => {
   localStorage.removeItem('token');
+  localStorage.removeItem('sesion');
   dispatch({ type: LOGOUT });
 };

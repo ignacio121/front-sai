@@ -8,7 +8,7 @@ import {
 const initialState = {
   loading: false,
   isAuthenticated: !!localStorage.getItem('token'),
-  sesion: null,
+  sesion: JSON.parse(localStorage.getItem('sesion')) || null,
   user: null,
   token: localStorage.getItem('token') || null,
   error: null,
@@ -37,6 +37,7 @@ const authReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         isAuthenticated: false,
+        sesion: null,
         user: null,
         token: null,
         error: action.error
@@ -44,9 +45,12 @@ const authReducer = (state = initialState, action) => {
     case LOGOUT:
       return {
         ...state,
-        token: null,
-        user: null,
+        loading: false,
         isAuthenticated: false,
+        sesion: null,
+        user: null,
+        token: null,
+        error: null
       };
     default:
       return state;
