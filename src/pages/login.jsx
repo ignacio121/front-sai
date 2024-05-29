@@ -1,17 +1,19 @@
-// src/components/Login.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { login } from '../Redux/actions/authActions';
-import { Contenedor, ContenedorForm, LoginText, Titulo, Form, InputContainer, Input, ButtonContainer, Button, Error } from '../style/login.style.js';
+import { Contenedor, ContenedorForm, LoginText, Titulo, Form, InputContainer, Input, ButtonContainer, Button, Error, StyledButton } from '../style/login.style.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; 
 
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, isAuthenticated, error, sesion } = useSelector((state) => state.auth);
+  const { loading, isAuthenticated, error, sesion } = useSelector((state) => state.auth) || {};
 
   const [Rut, setRut] = useState('');
   const [Password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const [authError, setAuthError] = useState({message:'', state:null});
 
@@ -39,6 +41,10 @@ function Login() {
   }
   }, [isAuthenticated, sesion, navigate, error, setAuthError]);
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <Contenedor>
       <Titulo>Sistema de Administración de Incidencias</Titulo>
@@ -49,6 +55,9 @@ function Login() {
           {authError.state && <Error error={authError.state} style={{ color: 'red' }}  >{authError.message}</Error>}
             <Input type='text' value={Rut} onChange={(e) => setRut(e.target.value)} placeholder='Rut' error={authError.state}/>
             <Input type='password' value={Password} onChange={(e) => setPassword(e.target.value)} placeholder='Contraseña' error={authError.state}/>
+            <StyledButton type="button" onClick={togglePasswordVisibility}>
+              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+            </StyledButton>
           </InputContainer>
           <ButtonContainer>
             <Button type='submit'>
