@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled,{ css } from 'styled-components';
 
 export const Contenedor = styled.div`
   margin: 0;
@@ -12,13 +12,13 @@ export const Contenedor = styled.div`
 `;
 
 export const Titulo = styled.h1`
-  box-sizing: border-box;
-  font-weight: 700;
-  color: #ffffff;
-  text-align: left;
-  line-height: normal;
-  position: absolute;
-  top: 30px;
+    box-sizing: border-box;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: left;
+    line-height: normal;
+    position: absolute;
+    top: 30px;
 `;
 
 export const ContenedorForm = styled.div`
@@ -37,10 +37,10 @@ export const ContenedorForm = styled.div`
 `;
 
 export const LoginText = styled.h2`
-  margin: 3rem 0 2rem 0;
-  color: #1e98d7;
-  font-size: 30px;
-  position: absolute;
+    margin: 3rem 0 2rem 0;
+    color: #1e98d7;
+    font-size: 30px;
+    position: absolute;
 `;
 
 export const Form = styled.form`
@@ -60,30 +60,29 @@ export const InputContainer = styled.div`
   height: 30%;
   width: 100%;
   margin-top: 10vh;
-  position: relative; 
 `;
 
 export const Input = styled.input`
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0px 0px 8px 0px rgba(0, 0, 255, 0.59);
-  border-radius: 15px;
-  width: 60%;
-  height: 10vh;
-  padding: 1rem;
-  border: none;
-  outline: none;
-  color: #1e98d7;
-  font-family: "Bahnschrift Light", "Bahnschrift", sans-serif;
-  margin-bottom: 6vh;
-  &:focus {
-    display: inline-block;
-    box-shadow: 0 0 0 0.1rem #1e98d7;
-    backdrop-filter: blur(12);
-  }
-  &::placeholder {
-    color: #1e98d7;
+    background : rgba(255,255,255,0.15);
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 255, 0.59);
+    border-radius: 15px;
+    width: 60%;
+    height: 10vh;
+    padding: 1rem;
+    border: 2px solid ${props => (props.error === 'true' ? 'red' : '#1e98d7')};
+    outline: none;
+    color: ${props => (props.error === 'true' ? 'red' : '#1e98d7')};
     font-family: "Bahnschrift Light", "Bahnschrift", sans-serif;
-  }
+    margin-bottom: 6vh;
+    &:focus{
+        display: inline-block;
+        box-shadow: 0 0 0 0.1rem ${props => (props.error === 'true' ? 'red' : '#1e98d7')};
+        backdrop-filter: blur(12);
+    }
+    &::placeholder{
+        color: ${props => (props.error === 'true' ? 'red' : '#1e98d7')};
+        font-family: "Bahnschrift Light", "Bahnschrift", sans-serif;
+    }
 `;
 
 export const ButtonContainer = styled.div`
@@ -112,6 +111,21 @@ export const Button = styled.button`
     box-shadow: 0px 0px 11px 0px rgba(0, 0, 255, 0.59),
       inset 0px 0px 4px 3px rgba(255, 255, 255, 0.35);
   }
+`;
+
+export const Error = styled.h1`
+    position: absolute;
+    font-size: 12px;
+    color: 'red';
+    display: none;
+    margin-bottom: 30vh;
+    font-family: "Bahnschrift Bold", "Bahnschrift", sans-serif;
+    ${props => props.error === 'false' && css`
+        display: none;
+    `}
+    ${props => props.error === 'true' && css`
+        display: block;
+    `}
 `;
 
 export const StyledButton = styled.button`

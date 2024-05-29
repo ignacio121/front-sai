@@ -1,11 +1,21 @@
-// reducers/categoriasReducer.js
+import {
 
-import { CATEGORIAS_REQUEST, CATEGORIAS_SUCCESS, CATEGORIAS_FAILURE } from '../actions/authActions';
+ CATEGORIAS_REQUEST,
+  CATEGORIAS_SUCCESS,
+  CATEGORIAS_FAILURE
+} from '../actions/categoriaActions';
+
+
+
 
 const initialState = {
   loading: false,
-  categorias: [], // Inicializamos categorías como un arreglo vacío
-  error: null
+  isAuthenticated: !!localStorage.getItem('token'),
+  sesion: null,
+  user: null,
+  token: localStorage.getItem('token') || null,
+  error: null,
+  categorias: []
 };
 
 const categoriasReducer = (state = initialState, action) => {
@@ -16,18 +26,18 @@ const categoriasReducer = (state = initialState, action) => {
         loading: true,
         error: null
       };
+  
+    
     case CATEGORIAS_SUCCESS:
       return {
         ...state,
         loading: false,
-        categorias: action.payload, // Actualizamos categorías con los datos recibidos
-        error: null
+        categorias: action.payload
       };
     case CATEGORIAS_FAILURE:
       return {
         ...state,
         loading: false,
-        categorias: [], // Reiniciamos categorías en caso de error
         error: action.error
       };
     default:

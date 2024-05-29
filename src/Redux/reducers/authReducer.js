@@ -1,29 +1,22 @@
-// En reducers/authReducer.js
-
 import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
-  LOGOUT,
-  CATEGORIAS_REQUEST,
-  CATEGORIAS_SUCCESS,
-  CATEGORIAS_FAILURE
+  LOGOUT
 } from '../actions/authActions';
 
 const initialState = {
   loading: false,
   isAuthenticated: !!localStorage.getItem('token'),
-  sesion: null,
+  sesion: JSON.parse(localStorage.getItem('sesion')) || null,
   user: null,
   token: localStorage.getItem('token') || null,
   error: null,
-  categorias: []
 };
 
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOGIN_REQUEST:
-    case CATEGORIAS_REQUEST:
       return {
         ...state,
         loading: true,
@@ -44,6 +37,7 @@ const authReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         isAuthenticated: false,
+        sesion: null,
         user: null,
         token: null,
         error: action.error
@@ -51,23 +45,12 @@ const authReducer = (state = initialState, action) => {
     case LOGOUT:
       return {
         ...state,
-        token: null,
-        user: null,
+        loading: false,
         isAuthenticated: false,
         sesion: null,
-        categorias: [] // Limpiar categorías al cerrar sesión
-      };
-    case CATEGORIAS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        categorias: action.payload
-      };
-    case CATEGORIAS_FAILURE:
-      return {
-        ...state,
-        loading: false,
-        error: action.error
+        user: null,
+        token: null,
+        error: null
       };
     default:
       return state;
