@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Barra from '../components/Barra';
 import Estudiante from '../components/estudiante'; 
 import Options from '../components/options';
 import Anuncios from '../components/anuncios';
-import { getCategorias } from '../Redux/actions/authActions';
 
 function EstudiantePage() {
   const navigate = useNavigate();
@@ -15,8 +14,6 @@ function EstudiantePage() {
   useEffect(() => {
     if (!token) {
       navigate('/');
-    } else {
-      dispatch(getCategorias());
     }
   }, [token, navigate, dispatch]);
 

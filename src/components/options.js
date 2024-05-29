@@ -35,8 +35,6 @@ const Options = ({ categorias }) => {
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
 
-  const handleTabClick = (tab) => setActiveTab(tab);
-
   const handleButtonClick = (action) => console.log(`Realizando acción: ${action}`);
 
   const handleCategoryClick = (id) => {

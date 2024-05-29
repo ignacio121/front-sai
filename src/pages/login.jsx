@@ -2,18 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { login } from '../Redux/actions/authActions';
-import {
-  Contenedor,
-  ContenedorForm,
-  LoginText,
-  Titulo,
-  Form,
-  InputContainer,
-  Input,
-  ButtonContainer,
-  Button,
-  StyledButton,
-} from '../style/login.style.js';
+import { Contenedor, ContenedorForm, LoginText, Titulo, Form, InputContainer, Input, ButtonContainer, Button, Error, StyledButton } from '../style/login.style.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; 
 
@@ -26,20 +15,31 @@ function Login() {
   const [Password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  const [authError, setAuthError] = useState({message:'', state:null});
+
   const handleAuth = (e) => {
     e.preventDefault();
-    dispatch(login(Rut, Password));
+    if ( !(/^\d{8}$/).test(Rut) ){
+      setAuthError({message: 'Por favor ingresa un rut valido', state:'true'});
+    } else {
+      dispatch(login(Rut, Password));
+    }
   };
 
   useEffect(() => {
-    if (isAuthenticated && sesion) {
-      if (sesion.userType === "alumno") {
-        navigate('/estudiante');
-      } else if (sesion.userType === "personal") {
-        navigate('/personal');
-      }
+    if (error && error.message) {
+        setAuthError({message:error.message, state:'true'});
     }
-  }, [isAuthenticated, sesion, navigate]);
+
+    if (isAuthenticated) {
+      if (sesion && sesion.userType === "alumno"){
+          navigate('/estudiante');
+      }
+      else if (sesion && sesion.userType === "personal"){
+          navigate('/personal');
+      };
+  }
+  }, [isAuthenticated, sesion, navigate, error, setAuthError]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -52,18 +52,9 @@ function Login() {
         <LoginText>INICIO DE SESIÓN</LoginText>
         <Form onSubmit={handleAuth}>
           <InputContainer>
-            <Input
-              type='text'
-              value={Rut}
-              onChange={(e) => setRut(e.target.value)}
-              placeholder='Rut'
-            />
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              value={Password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder='Contraseña'
-            />
+          {authError.state && <Error error={authError.state} style={{ color: 'red' }}  >{authError.message}</Error>}
+            <Input type='text' value={Rut} onChange={(e) => setRut(e.target.value)} placeholder='Rut' error={authError.state}/>
+            <Input type='password' value={Password} onChange={(e) => setPassword(e.target.value)} placeholder='Contraseña' error={authError.state}/>
             <StyledButton type="button" onClick={togglePasswordVisibility}>
               <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
             </StyledButton>
@@ -74,9 +65,7 @@ function Login() {
             </Button>
           </ButtonContainer>
         </Form>
-        {error && typeof error === 'string' && (
-          <p style={{ color: 'red' }}>{error}</p>
-        )}
+        
       </ContenedorForm>
     </Contenedor>
   );
