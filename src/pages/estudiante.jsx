@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Barra from '../components/Barra';
 import Estudiante from '../components/estudiante'; 
 import Options  from '../components/options';
