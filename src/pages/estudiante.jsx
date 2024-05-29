@@ -5,21 +5,49 @@ import Barra from '../components/Barra';
 import Estudiante from '../components/estudiante'; 
 import Options from '../components/options';
 import Anuncios from '../components/anuncios';
+import { getCategorias } from '../Redux/actions/categoriaActions';
+import { getDestinatarios } from '../Redux/actions/destinatarioActions';
 
 function EstudiantePage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user, token, categorias, loading, error } = useSelector((state) => state.auth);
+  const { user, token, loading, error } = useSelector((state) => state.auth);
+  const { categorias } = useSelector((state) => state.categorias);
+  const { destinatarios } = useSelector((state) => state.destinatarios);
 
   useEffect(() => {
     if (!token) {
       navigate('/');
+    } else {
+      dispatch(getCategorias());
+      dispatch(getDestinatarios());
     }
   }, [token, navigate, dispatch]);
 
   useEffect(() => {
-    console.log('Categorías:', categorias);
+    if (categorias.length > 0) {
+      console.log('Categorías:', categorias);
+    }
   }, [categorias]);
+
+  useEffect(() => {
+    if (destinatarios.length > 0) {
+      console.log('Destinatarios:', destinatarios);
+    }
+  }, [destinatarios]);
+
+  useEffect(() => {
+    if (user) {
+      console.log('Estudiante:', {
+        nombre: user.nombre,
+        apellido: user.apellido,
+        rut: user.rut,
+        email: user.email,
+        foto: user.foto,
+        carrera: user.carrera?.nombre
+      });
+    }
+  }, [user]);
 
   return (
     <div>
@@ -35,9 +63,12 @@ function EstudiantePage() {
                 rut={user?.rut}
                 email={user?.email}
                 foto={user?.foto}
-                carrera={user?.carrera['nombre']}
+                carrera={user?.carrera?.nombre}
               />
-              <Options categorias={categorias} />
+              <Options 
+                categorias={categorias}
+                destinatarios={destinatarios} 
+              />
               {loading ? (
                 <p>Cargando categorías...</p>
               ) : error ? (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef  } from 'react';
 import styled from 'styled-components';
 import Button from 'react-bootstrap/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -26,28 +26,77 @@ const iconsCategorias = {
   7: MdDescription
 };
 
-const Options = ({ categorias }) => {
+
+
+
+
+
+
+
+const Options = ({ categorias, destinatarios }) => {
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState(1);
   const [selected, setSelected] = useState(null);
-  const [showNextButton, setShowNextButton] = useState(false); // Estado para mostrar el botón de Siguiente
+  const [showNextButton, setShowNextButton] = useState(false); 
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  useEffect(() => {
+    return () => {
+      selectedFiles.forEach(fileObj => URL.revokeObjectURL(fileObj.preview));
+    };
+  }, [selectedFiles]);
+  
+  const [selectedPriority, setSelectedPriority] = useState(null); 
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
+  const [selectedDestinatario, setSelectedDestinatario] = useState(null);
+
+  const handleTabClick = (tab) => setActiveTab(tab);
+
+  const handleSelectDestinatario = (destinatario) => {
+    setSelectedDestinatario(destinatario);
+  };
+  const inputFileRef = useRef(null);
+
+  const handleFileInputChange = (event) => {
+    const files = Array.from(event.target.files);
+    const filesWithPreview = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file) // Crear URL de objeto para previsualización
+    }));
+    setSelectedFiles(filesWithPreview);
+  };
+  const InputFile = styled.input`
+  display: none;
+`;
+
+  const openFileInput = () => {
+    inputFileRef.current.click();
+  };
+  
+  
 
   const handleButtonClick = (action) => console.log(`Realizando acción: ${action}`);
+  const handleBackButtonClick = () => {
+    setActiveTab(1); 
+  };
+  const handlePriorityClick = (priority) => {
+    setSelectedPriority(priority); 
+  };
 
   const handleCategoryClick = (id) => {
     if (selected !== id) {
       setSelected(id);
-      setShowNextButton(true); // Mostrar el botón de Siguiente al seleccionar una categoría
+      setShowNextButton(true);
     }
   };
 
   const handleNextButtonClick = () => {
-    setActiveTab(activeTab + 1); // Avanzar de pestaña al hacer clic en Siguiente
-    setShowNextButton(false); // Ocultar el botón de Siguiente después de avanzar
+    setActiveTab(activeTab + 1);
+    setShowNextButton(false); 
   };
+  
 
   const ModalContent = styled.div`
     padding: 20px;
@@ -85,60 +134,96 @@ const Options = ({ categorias }) => {
 
       <Modal show={showModal} onClose={closeModal} title="Ingresar incidencia">
         <ProgressBar step={activeTab} />
-        <div className='barraModal'>
-          {/* <button onClick={() => handleTabClick(1)}>Paso 1 Categoría</button>
-          <button onClick={() => handleTabClick(2)}>Paso 2</button>
-          <button onClick={() => handleTabClick(3)}>Paso 3</button> */}
-        </div>
+       
         <TabContent active={activeTab === 1}>
           <ModalContent>
-            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-              {categorias.map((categoria) => {
-                const Icon = iconsCategorias[categoria.id];
-                return (
-                  <Tarjeta
-                    key={categoria.id}
-                    selected={selected === categoria.id}
-                    onClick={() => handleCategoryClick(categoria.id)}
-                  >
-                    {typeof Icon === 'function' ? (
-                      <Icon size={40} style={{ marginTop: '10px', marginLeft: '35%', color: selected === categoria.id ? 'white' : 'rgb(0, 85, 169)' }} />
-                    ) : (
-                      <FontAwesomeIcon
-                        icon={Icon}
-                        size="2x"
-                        style={{ marginTop: '10px', color: selected === categoria.id ? 'white' : 'rgb(0, 85, 169)' }}
-                      />
-                    )}
-                    <h1>{categoria.nombre}</h1>
-                    <p>{categoria.descripcion}</p>
-                  </Tarjeta>
-                );
-              })}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', width: '100%' }}>
+                {categorias.map((categoria) => {
+                  const Icon = iconsCategorias[categoria.id];
+                  return (
+                    <Tarjeta
+                      key={categoria.id}
+                      selected={selected === categoria.id}
+                      onClick={() => handleCategoryClick(categoria.id)}
+                    >
+                      {typeof Icon === 'function' ? (
+                        <Icon size={40} style={{ marginTop: '10px', marginLeft: '35%', color: selected === categoria.id ? 'white' : 'rgb(0, 85, 169)' }} />
+                      ) : (
+                        <FontAwesomeIcon
+                          icon={Icon}
+                          size="2x"
+                          style={{ marginTop: '10px', color: selected === categoria.id ? 'white' : 'rgb(0, 85, 169)' }}
+                        />
+                      )}
+                      <h1>{categoria.nombre}</h1>
+                      <p>{categoria.descripcion}</p>
+                    </Tarjeta>
+                  );
+                })}
+              </div>
+              {showNextButton && <Buttons1 onClick={handleNextButtonClick}>Siguiente</Buttons1>}
             </div>
           </ModalContent>
-          {showNextButton && <Button onClick={handleNextButtonClick}>Siguiente</Button>}
         </TabContent>
+
+
         <TabContent active={activeTab === 2}>
           <ModalContent>
-            <div className='paso2'>
-              <h2>¿Quién cree que puede resolver de mejor manera tu problemática?</h2>
-              <div className='paso2_contenedor'>
-                <p>Jefe de carrera</p>
-              </div>
-              <div className='paso2_contenedor'>
-                <p>Asistente de jefe de carreras</p>
-              </div>
+            <h2 style={{color:'#007bff'}}>¿Quién cree que puede resolver de mejor manera tu problemática?</h2>
+            <div className='paso2_contenedor'>
+              {destinatarios
+                .filter(destinatario => destinatario.carrera_id === 1)
+                .map(destinatario => (
+                  <PriorityButton
+                    key={destinatario.id}
+                    onClick={() => handleSelectDestinatario(destinatario)}
+                    selected={selectedDestinatario === destinatario}
+                  >
+                    {destinatario.nombre}
+                    </PriorityButton>
+                ))}
             </div>
+            <h2 style={{color:'#007bff'}}>¿Qué prioridad le darías a tu problemática?</h2>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+              <PriorityButton onClick={() => handlePriorityClick('Alta')} selected={selectedPriority === 'Alta'}>Alta</PriorityButton>
+              <PriorityButton onClick={() => handlePriorityClick('Media')} selected={selectedPriority === 'Media'}>Media</PriorityButton>
+              <PriorityButton onClick={() => handlePriorityClick('Baja')} selected={selectedPriority === 'Baja'}>Baja</PriorityButton>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Buttons1 onClick={handleBackButtonClick}style={{ marginRight: '10px', marginLeft:'30%' }}>Retroceder</Buttons1>
+              <Buttons1 onClick={handleNextButtonClick}style={{ marginLeft: '5%' }}>Siguiente</Buttons1>
+            </div>
+
           </ModalContent>
         </TabContent>
         <TabContent active={activeTab === 3}>
-          <ModalContent>
-            <h2>Paso 3 - Contenido</h2>
-            <p>Contenido del paso 3...</p>
-          </ModalContent>
-        </TabContent>
-        <Button onClick={closeModal}>Cerrar</Button>
+        <ModalContent>
+          <h2 style={{ color: '#007bff' }}>Describe tu problemática</h2>
+          <Textarea rows="5" placeholder="Escribe aquí tu descripción..." />
+          <Label htmlFor="inputFile" onClick={openFileInput}>
+            Adjuntar archivos
+          </Label>
+          <InputFile
+            type="file"
+            id="inputFile"
+            ref={inputFileRef}
+            onChange={handleFileInputChange}
+            multiple
+          />
+          {selectedFiles.length > 0 && (
+            <FileList>
+              {selectedFiles.map((fileObj, index) => (
+                <FileListItem key={index}>
+                  <a href={fileObj.preview} target="_blank" rel="noopener noreferrer">{fileObj.file.name}</a>
+                </FileListItem>
+              ))}
+            </FileList>
+          )}
+        </ModalContent>
+</TabContent>
+
+
       </Modal>
     </div>
   );
@@ -146,11 +231,55 @@ const Options = ({ categorias }) => {
 
 export default Options;
 
+const FileList = styled.ul`
+list-style: none;
+padding: 0;
+margin-top: 10px;
+`;
+
+const FileListItem = styled.li`
+background-color: #f0f0f0;
+padding: 5px;
+margin-top: 5px;
+border-radius: 5px;
+`;
+const Textarea = styled.textarea`
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+`;
+
+const Label = styled.label`
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+`;
 const Menu = styled.div`
   margin-top: 3%;
   margin-left: 30%;
   width: 100%;
 `;
+const PriorityButton = styled.button`
+  background-color: ${(props) => (props.selected ? '#007bff' : 'white')};
+  color: ${(props) => (props.selected ? 'white' : '#007bff')}; 
+  border: 2px solid #007bff;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: #0056b3;
+    color: white;
+  }
+`;
+
 
 const Tarjeta = styled.div`
   border: 1px solid black;
@@ -189,6 +318,39 @@ const Incidencia = styled.div`
   background-color: ${(props) => props.color}; 
 `;
 
+const Buttons = styled.button`
+  background-color: ${(props) => (props.selected ? 'white' : '#007bff')};
+  color: ${(props) => (props.selected ? '#007bff' : 'white')}; 
+  border: ${(props) => (props.selected ? '2px solid black' : 'none')}; 
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: ${(props) => (props.selected ? '#0072C2' : '#0056b3')};
+    color: white; 
+  }
+`;
+
+const Buttons1 = styled.button`
+  background-color: #007bff;
+  color: white; 
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+  margin-top: 20px;
+  margin-right:40%;
+  align-self: flex-end;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+
+
 const Text = styled.p`
   margin-left: 20px;
 `;
@@ -226,110 +388,123 @@ const Modal = ({ children, show, onClose, title }) => {
                 >
                   <path
                     fill="currentColor"
-                    d="M50.844 125.844c-9.373-9.373-24.569-9.373-33.941 0s-9.373 24.569 0 33.941l246.06 246.06-246.06 246.06c-9.373 9.373-9.373 24.569 0 33.941s24.569 9.373 33.941 0l246.06-246.06 246.06 246.06c9.373 9.373373 24.569 9.373 33.941 0l-246.06-246.06 246.06-246.06c9.373-9.373 9.373-24.569 0-33.941s-24.569-9.373-33.941 0l-246.06 246.06-246.06-246.06c-9.373-9.372-24.569-9.372-33.941 0z"
-                    ></path>
-                  </svg>
-                </BotonCerrar>
-              </EncabezadoModal>
-              <ContenidoModal>{children}</ContenidoModal>
-            </ContenedorModal>
-          </Overlay>
-        )}
-      </>
-    );
-  };
-  
-  const Overlay = styled.div`
-    width: 100vw;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.468);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 3;
-  `;
-  
-  const ContenedorModal = styled.div`
-    width: 90%;
-    margin-top: 3%;
-    margin-bottom: 3%;
-    height: 90%;
-    max-width: 700px;
-    background: #fff;
-    position: relative;
-    border-radius: 5px;
-    box-shadow: rgba(141, 121, 121, 0.24) 0px 3px 8px;
-    padding: 20px;
-    z-index: 4;
-  `;
-  
-  const EncabezadoModal = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    height: 40px;
-    margin-top: 10px;
-    padding-bottom: 20px;
-    background-color: rgb(0, 85, 169);
-    h3 {
-      font-weight: 500;
-      font-size: 30px;
-      margin-left: 30%;
-      margin-top: 6%;
-      font-weight: bold;
-      color: white;
-    }
-  `;
-  
-  const BotonCerrar = styled.button`
-    position: absolute;
-    top: 35px;
-    right: 60px;
+                    d="M50.844 125.844c-9.373-9.373-24.569-9.373-33.941 0s-9.373 24.569 0 33.941l246.06 246.06-246.06 246.06c-9.373 9.373-9.373 24.569 0 33.941s24.569 9.373 33.941 0l246.06-246.06 246.06 246.06c9.373 9.373 24.569 9.373 33.941 0l-246.06-246.06 246.06-246.06c9.373-9.373 9.373-24.569 0-33.941s-24.569-9.373-33.941 0l-246.06 246.06-246.06-246.06c-9.373-9.372-24.569-9.372-33.941 0z"
+                  ></path>
+                </svg>
+              </BotonCerrar>
+            </EncabezadoModal>
+            <ContenidoModal>{children}</ContenidoModal>
+          </ContenedorModal>
+        </Overlay>
+      )}
+    </>
+  );
+};
+
+    
+    const Overlay = styled.div`
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.468);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    `;
+    
+    const ContenedorModal = styled.div`
+      width: 90%;
+      max-width: 700px;
+      height: auto;
+      max-height: 90%;
+      background: #fff;
+      position: relative;
+      border-radius: 5px;
+      box-shadow: rgba(141, 121, 121, 0.24) 0px 3px 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: auto;
+      box-sizing: border-box;
+    `;
+
+
+
+    
+const EncabezadoModal = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  height: auto;
+  padding: 10px 20px;
+  background-color: rgb(0, 85, 169);
+  width: 100%;
+  box-sizing: border-box;
+
+  h3 {
+    font-weight: 500;
+    font-size: 1.5em;
+    margin: 0;
+    flex-grow: 1;
+    text-align: center;
     color: white;
-    width: 30px;
-    height: 30px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    transition: 0.3s ease all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  `;
+
+const BotonCerrar = styled.button`
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: 0.3s ease all;
+  font-weight: bold;
+
+  &:hover {
+    color: black;
+    font-size: small;
     font-weight: bold;
-  
-    &:hover {
-      color: black;
-      font-size: small;
-      font-weight: bold;
-    }
-  
-    svg {
-      width: 100%;
-      height: 100%;
-      stroke-width: 2;
-    }
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    stroke-width: 2;
+  }
   `;
+
+    
+    const ContenidoModal = styled.div`
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    `;
+    
+    export {
+      Options,
+      Menu,
+      Tarjeta,
+      Incidencia,
+      Text,
+      ButtonWrapper,
+      Modal,
+      Overlay,
+      ContenedorModal,
+      EncabezadoModal,
+      BotonCerrar,
+      ContenidoModal
+    };
   
-  const ContenidoModal = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-  `;
-  
-  export {
-    Options,
-    Menu,
-    Tarjeta,
-    Incidencia,
-    Text,
-    ButtonWrapper,
-    Modal,
-    Overlay,
-    ContenedorModal,
-    EncabezadoModal,
-    BotonCerrar,
-    ContenidoModal
-  };
-   
