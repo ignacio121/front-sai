@@ -21,9 +21,6 @@ export const login = (rut, contraseña) => async (dispatch) => {
     const { token, userId, userType, rol, carrera_id } = loginResponse;
     localStorage.setItem('token', token);
 
-    console.log('carrera',carrera_id);
-    console.log(loginResponse);
-
     if (loginResponse && userType === 'alumno') {
       const { data } = await axios.get(`${URI}/alumnos/${userId}`, {
         headers: {
@@ -41,6 +38,7 @@ export const login = (rut, contraseña) => async (dispatch) => {
     } 
 
     const sesion = { userId, userType, rol, carrera_id };
+    localStorage.setItem('sesion', JSON.stringify(sesion));
 
     dispatch({ type: LOGIN_SUCCESS, payload: { token, sesion, user: userResponse } });
 
@@ -52,9 +50,8 @@ export const login = (rut, contraseña) => async (dispatch) => {
   }
 };
 
-
-
 export const logout = () => (dispatch) => {
   localStorage.removeItem('token');
+  localStorage.removeItem('sesion');
   dispatch({ type: LOGOUT });
 };

@@ -7,12 +7,14 @@ import navReducer from './navReducer';
 
 
 
+
+
 const rootReducer = combineReducers({
   auth: authReducer,
+  nav: navReducer,
+  incidencias: incidenciasReducer,
   categorias : categoriasReducer,
   destinatarios : destinatariosReducer,
-  nav: navReducer,
-  incidencias: incidenciasReducer
   // otros reducers pueden ir aquí
 });
 
