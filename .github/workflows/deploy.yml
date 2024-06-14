@@ -22,8 +22,8 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        docker build -t ignacio121/build-front-sai:latest .
-        docker push ignacio121/build-front-sai:latest
+        docker build -t ignacio121/build-front-sai:${{ github.sha }} .
+        docker push ignacio121/build-front-sai:${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest
