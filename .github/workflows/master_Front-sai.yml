@@ -30,7 +30,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_e11280885e3f4f6781d798f5de424f78 }}/ignacio121/build-front-sai:${{ github.sha }}
+        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_e11280885e3f4f6781d798f5de424f78 }}/build-front-sai:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
