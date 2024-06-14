@@ -7,6 +7,7 @@ import Options from '../components/options';
 import Anuncios from '../components/anuncios';
 import { getCategorias } from '../Redux/actions/categoriaActions';
 import { getDestinatarios } from '../Redux/actions/destinatarioActions';
+import {fetchPreguntasFrecuentes} from '../Redux/actions/pfActions';
 
 function EstudiantePage() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ function EstudiantePage() {
     } else {
       dispatch(getCategorias());
       dispatch(getDestinatarios());
+      dispatch(fetchPreguntasFrecuentes());
     }
   }, [token, navigate, dispatch]);
 
@@ -38,17 +40,20 @@ function EstudiantePage() {
 
   useEffect(() => {
     if (user) {
-      console.log('Estudiante:', {
-        nombre: user.nombre,
-        apellido: user.apellido,
-        rut: user.rut,
-        email: user.email,
-        foto: user.foto,
-        carrera: user.carrera?.nombre
-      });
+      console.log('Usuario:', user);
+      console.log('userId:', user.userId);
+      console.log('carrera_id:', user.carrera_id);
     }
   }, [user]);
+  const { preguntasFrecuentes } = useSelector((state) => state.preguntasFrecuentes);
 
+useEffect(() => {
+  if (preguntasFrecuentes) {
+    console.log('Preguntas Frecuentes:', preguntasFrecuentes);
+    // Aquí podrías manejar las preguntas frecuentes y mostrarlas en tu interfaz
+  }
+}, [preguntasFrecuentes]);
+  
   return (
     <div>
       {token ? (
@@ -64,6 +69,8 @@ function EstudiantePage() {
                 email={user?.email}
                 foto={user?.foto}
                 carrera={user?.carrera?.nombre}
+                userId={user?.userId}  
+                carreraId={user?.carrera_id}  
               />
               <Options 
                 categorias={categorias}

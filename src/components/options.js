@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef  } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Button from 'react-bootstrap/Button';
+import swal from 'sweetalert';
+import FAQComponent from './pf'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   MdNote,
@@ -14,8 +16,11 @@ import {
   MdDescription,
   MdPerson,
 } from 'react-icons/md';
-import ProgressBar from "./barProgress";
+import ProgressBar from './barProgress';
+import { useSelector, useDispatch } from 'react-redux';
+import { postIncidencia } from '../Redux/actions/incidenciasActions';
 
+// Iconos por categoría
 const iconsCategorias = {
   1: MdComputer,
   2: MdPerson,
@@ -23,66 +28,94 @@ const iconsCategorias = {
   4: MdSchool,
   5: MdAssignment,
   6: MdDomain,
-  7: MdDescription
+  7: MdDescription,
 };
-
-
-
-
-
-
-
 
 const Options = ({ categorias, destinatarios }) => {
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState(1);
   const [selected, setSelected] = useState(null);
-  const [showNextButton, setShowNextButton] = useState(false); 
+  const [showNextButton, setShowNextButton] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedPriority, setSelectedPriority] = useState(null);
+  const [selectedDestinatario, setSelectedDestinatario] = useState(null);
+  const [descripcion, setDescripcion] = useState('');
+
+  const textareaRef = useRef(null);
+
+  const handleBlur = () => {
+    setDescripcion(textareaRef.current.value);
+  };
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     return () => {
-      selectedFiles.forEach(fileObj => URL.revokeObjectURL(fileObj.preview));
+      selectedFiles.forEach((fileObj) => URL.revokeObjectURL(fileObj.preview));
     };
   }, [selectedFiles]);
-  
-  const [selectedPriority, setSelectedPriority] = useState(null); 
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
-  const [selectedDestinatario, setSelectedDestinatario] = useState(null);
+  const ModalContent = styled.div`
+  padding: 20px;
+`;
+
+const InputFile = styled.input`
+  display: none;
+`;
+const TabContent = styled.div`
+  display: ${props => (props.active ? 'block' : 'none')};
+`;
+
+  const inputFileRef = useRef(null);
+
+  const handleFileInputChange = (event) => {
+    const files = Array.from(event.target.files);
+    const filesWithPreview = files.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setSelectedFiles(filesWithPreview);
+  };
+
+  const handleSubmit = () => {
+    const data = {
+      alumno_id: '13',
+      categoriaincidencia_id: selected,
+      descripcion,
+      prioridad: selectedPriority,
+      carrera_id: '2',
+      archivo: selectedFiles.map((fileObj) => fileObj.file),
+      personal_id: '7',
+    };
+    dispatch(postIncidencia(data))
+      .then(() => {
+        // Si la solicitud es exitosa, muestra un SweetAlert de éxito
+        swal('¡Incidencia enviada!', 'Tu incidencia ha sido enviada correctamente.', 'success');
+        setShowModal(false);
+        setSelected(null);
+        setSelectedFiles([]);
+        setSelectedPriority(null);
+        setSelectedDestinatario(null);
+        setDescripcion('');
+        setActiveTab(1);
+      })
+      .catch((error) => {
+        // Si hay un error, muestra un SweetAlert de error
+        swal('Error', 'Ocurrió un error al enviar la incidencia. Por favor, intenta de nuevo.', 'error');
+        console.error('Error al enviar la incidencia:', error);
+      });
+  };
 
   const handleTabClick = (tab) => setActiveTab(tab);
 
   const handleSelectDestinatario = (destinatario) => {
     setSelectedDestinatario(destinatario);
   };
-  const inputFileRef = useRef(null);
 
-  const handleFileInputChange = (event) => {
-    const files = Array.from(event.target.files);
-    const filesWithPreview = files.map(file => ({
-      file,
-      preview: URL.createObjectURL(file) // Crear URL de objeto para previsualización
-    }));
-    setSelectedFiles(filesWithPreview);
-  };
-  const InputFile = styled.input`
-  display: none;
-`;
-
-  const openFileInput = () => {
-    inputFileRef.current.click();
-  };
-  
-  
-
-  const handleButtonClick = (action) => console.log(`Realizando acción: ${action}`);
-  const handleBackButtonClick = () => {
-    setActiveTab(1); 
-  };
   const handlePriorityClick = (priority) => {
-    setSelectedPriority(priority); 
+    setSelectedPriority(priority);
   };
 
   const handleCategoryClick = (id) => {
@@ -94,17 +127,23 @@ const Options = ({ categorias, destinatarios }) => {
 
   const handleNextButtonClick = () => {
     setActiveTab(activeTab + 1);
-    setShowNextButton(false); 
+    setShowNextButton(false);
   };
-  
 
-  const ModalContent = styled.div`
-    padding: 20px;
-  `;
+  const handleButtonClick = (action) => console.log(`Realizando acción: ${action}`);
 
-  const TabContent = styled.div`
-    display: ${props => (props.active ? 'block' : 'none')};
-  `;
+  const handleBackButtonClick = () => {
+    setActiveTab(activeTab - 1);
+  };
+
+  const openFileInput = () => {
+    inputFileRef.current.click();
+  };
+  const [mostrarFAQ, setMostrarFAQ] = useState(false);
+
+  const handleMostrarFAQ = () => {
+    setMostrarFAQ(!mostrarFAQ); 
+  };
 
   return (
     <div>
@@ -116,17 +155,20 @@ const Options = ({ categorias, destinatarios }) => {
           </ButtonWrapper>
         </Incidencia>
 
-        <Incidencia color="#0072C2" onClick={() => handleButtonClick("preguntas_frecuentes")}>
-          <MdHelp size={26} color="white" />
-          <Text>Preguntas frecuentes</Text>
-        </Incidencia>
-
-        <Incidencia color="#008ACB" onClick={() => handleButtonClick("foro_estudiantil")}>
+        <div>
+      <Incidencia color="#0072C2" onClick={handleMostrarFAQ}>
+        <MdHelp size={26} color="white" />
+        <span>Preguntas frecuentes</span>
+      </Incidencia>
+      
+      {mostrarFAQ && <FAQComponent />} {/* Renderiza FAQComponent si mostrarFAQ es true */}
+    </div>
+        <Incidencia color="#008ACB" onClick={() => handleButtonClick('foro_estudiantil')}>
           <MdEdit size={26} color="white" />
           <Text>Foro estudiantil</Text>
         </Incidencia>
 
-        <Incidencia color="#00A1E4" onClick={() => handleButtonClick("estado_incidencias")}>
+        <Incidencia color="#00A1E4" onClick={() => handleButtonClick('estado_incidencias')}>
           <MdTask size={26} color="white" />
           <Text>Estado Incidencias</Text>
         </Incidencia>
@@ -134,7 +176,7 @@ const Options = ({ categorias, destinatarios }) => {
 
       <Modal show={showModal} onClose={closeModal} title="Ingresar incidencia">
         <ProgressBar step={activeTab} />
-       
+
         <TabContent active={activeTab === 1}>
           <ModalContent>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
@@ -148,12 +190,22 @@ const Options = ({ categorias, destinatarios }) => {
                       onClick={() => handleCategoryClick(categoria.id)}
                     >
                       {typeof Icon === 'function' ? (
-                        <Icon size={40} style={{ marginTop: '10px', marginLeft: '35%', color: selected === categoria.id ? 'white' : 'rgb(0, 85, 169)' }} />
+                        <Icon
+                          size={40}
+                          style={{
+                            marginTop: '10px',
+                            marginLeft: '35%',
+                            color: selected === categoria.id ? 'white' : 'rgb(0, 85, 169)',
+                          }}
+                        />
                       ) : (
                         <FontAwesomeIcon
                           icon={Icon}
                           size="2x"
-                          style={{ marginTop: '10px', color: selected === categoria.id ? 'white' : 'rgb(0, 85, 169)' }}
+                          style={{
+                            marginTop: '10px',
+                            color: selected === categoria.id ? 'white' : 'rgb(0, 85, 169)',
+                          }}
                         />
                       )}
                       <h1>{categoria.nombre}</h1>
@@ -167,82 +219,108 @@ const Options = ({ categorias, destinatarios }) => {
           </ModalContent>
         </TabContent>
 
-
         <TabContent active={activeTab === 2}>
           <ModalContent>
-            <h2 style={{color:'#007bff'}}>¿Quién cree que puede resolver de mejor manera tu problemática?</h2>
-            <div className='paso2_contenedor'>
+            <h2 style={{ color: '#007bff' }}>¿Quién cree que puede resolver de mejor manera tu problemática?</h2>
+            <div className="paso2_contenedor">
               {destinatarios
-                .filter(destinatario => destinatario.carrera_id === 1)
-                .map(destinatario => (
+                .filter((destinatario) => destinatario.carrera_id === 1)
+                .map((destinatario) => (
                   <PriorityButton
                     key={destinatario.id}
                     onClick={() => handleSelectDestinatario(destinatario)}
                     selected={selectedDestinatario === destinatario}
                   >
                     {destinatario.nombre}
-                    </PriorityButton>
+                  </PriorityButton>
                 ))}
             </div>
-            <h2 style={{color:'#007bff'}}>¿Qué prioridad le darías a tu problemática?</h2>
+            <h2 style={{ color: '#007bff' }}>¿Qué prioridad le darías a tu problemática?</h2>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-              <PriorityButton onClick={() => handlePriorityClick('Alta')} selected={selectedPriority === 'Alta'}>Alta</PriorityButton>
-              <PriorityButton onClick={() => handlePriorityClick('Media')} selected={selectedPriority === 'Media'}>Media</PriorityButton>
-              <PriorityButton onClick={() => handlePriorityClick('Baja')} selected={selectedPriority === 'Baja'}>Baja</PriorityButton>
+              <PriorityButton onClick={() => handlePriorityClick('Alta')} selected={selectedPriority === 'Alta'}>
+                Alta
+              </PriorityButton>
+              <PriorityButton onClick={() => handlePriorityClick('Media')} selected={selectedPriority === 'Media'}>
+                Media
+              </PriorityButton>
+              <PriorityButton onClick={() => handlePriorityClick('Baja')} selected={selectedPriority === 'Baja'}>
+                Baja
+              </PriorityButton>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Buttons1 onClick={handleBackButtonClick}style={{ marginRight: '10px', marginLeft:'30%' }}>Retroceder</Buttons1>
-              <Buttons1 onClick={handleNextButtonClick}style={{ marginLeft: '5%' }}>Siguiente</Buttons1>
+              <Buttons1 onClick={handleBackButtonClick} style={{ marginRight: '10px', marginLeft: '30%' }}>
+                Retroceder
+              </Buttons1>
+              <Buttons1 onClick={handleNextButtonClick} style={{ marginLeft: '5%' }}>
+                Siguiente
+              </Buttons1>
             </div>
-
           </ModalContent>
         </TabContent>
+
+      
         <TabContent active={activeTab === 3}>
-        <ModalContent>
-          <h2 style={{ color: '#007bff' }}>Describe tu problemática</h2>
-          <Textarea rows="5" placeholder="Escribe aquí tu descripción..." />
-          <Label htmlFor="inputFile" onClick={openFileInput}>
-            Adjuntar archivos
-          </Label>
-          <InputFile
-            type="file"
-            id="inputFile"
-            ref={inputFileRef}
-            onChange={handleFileInputChange}
-            multiple
-          />
-          {selectedFiles.length > 0 && (
-            <FileList>
-              {selectedFiles.map((fileObj, index) => (
-                <FileListItem key={index}>
-                  <a href={fileObj.preview} target="_blank" rel="noopener noreferrer">{fileObj.file.name}</a>
-                </FileListItem>
-              ))}
-            </FileList>
-          )}
-        </ModalContent>
-</TabContent>
+          <ModalContent>
+            <h2 style={{ color: '#007bff' }}>Describe tu problemática</h2>
 
 
+            
+            <Textarea
+              ref={textareaRef}
+              rows="5"
+              placeholder="Escribe aquí tu descripción..."
+              defaultValue={descripcion}
+              onBlur={handleBlur}
+            />
+            <Label htmlFor="inputFile" onClick={openFileInput}>
+              Adjuntar archivos
+            </Label>
+            <InputFile
+              type="file"
+              id="inputFile"
+              ref={inputFileRef}
+              onChange={handleFileInputChange}
+              multiple
+            />
+            {selectedFiles.length > 0 && (
+              <FileList>
+                {selectedFiles.map((fileObj, index) => (
+                  <FileListItem key={index}>
+                    <a href={fileObj.preview} target="_blank" rel="noopener noreferrer">{fileObj.file.name}</a>
+                  </FileListItem>
+                ))}
+              </FileList>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+              <Buttons1 onClick={handleBackButtonClick} style={{ marginRight: '10px' }}>
+                Retroceder
+              </Buttons1>
+              <Buttons1 onClick={handleSubmit} style={{ marginLeft: '5%' }}>
+                Enviar
+              </Buttons1>
+            </div>
+          </ModalContent>
+        </TabContent>
       </Modal>
     </div>
   );
 };
-
 export default Options;
 
-const FileList = styled.ul`
-list-style: none;
-padding: 0;
-margin-top: 10px;
-`;
+
+  const FileList = styled.ul`
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+  `;
 
 const FileListItem = styled.li`
-background-color: #f0f0f0;
-padding: 5px;
-margin-top: 5px;
-border-radius: 5px;
+  background-color: #f0f0f0;
+  padding: 5px;
+  margin-top: 5px;
+  border-radius: 5px;
 `;
+
 const Textarea = styled.textarea`
   width: 100%;
   padding: 10px;
@@ -260,14 +338,16 @@ const Label = styled.label`
   border-radius: 5px;
   cursor: pointer;
 `;
+
 const Menu = styled.div`
   margin-top: 3%;
   margin-left: 30%;
   width: 100%;
 `;
+
 const PriorityButton = styled.button`
   background-color: ${(props) => (props.selected ? '#007bff' : 'white')};
-  color: ${(props) => (props.selected ? 'white' : '#007bff')}; 
+  color: ${(props) => (props.selected ? 'white' : '#007bff')};
   border: 2px solid #007bff;
   padding: 10px 20px;
   margin: 5px;
@@ -275,11 +355,10 @@ const PriorityButton = styled.button`
   border-radius: 5px;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: ${(props) => (props.selected ? '#0072C2' : '#0056b3')};
     color: white;
   }
 `;
-
 
 const Tarjeta = styled.div`
   border: 1px solid black;
@@ -314,34 +393,19 @@ const Incidencia = styled.div`
   align-items: center;
   color: white;
   padding: 10px;
-  cursor: pointer; 
-  background-color: ${(props) => props.color}; 
-`;
-
-const Buttons = styled.button`
-  background-color: ${(props) => (props.selected ? 'white' : '#007bff')};
-  color: ${(props) => (props.selected ? '#007bff' : 'white')}; 
-  border: ${(props) => (props.selected ? '2px solid black' : 'none')}; 
-  padding: 10px 20px;
-  margin: 5px;
   cursor: pointer;
-  border-radius: 5px;
-
-  &:hover {
-    background-color: ${(props) => (props.selected ? '#0072C2' : '#0056b3')};
-    color: white; 
-  }
+  background-color: ${(props) => props.color};
 `;
 
 const Buttons1 = styled.button`
   background-color: #007bff;
-  color: white; 
+  color: white;
   padding: 10px 20px;
   cursor: pointer;
   border-radius: 5px;
   border: none;
   margin-top: 20px;
-  margin-right:40%;
+  margin-right: 40%;
   align-self: flex-end;
 
   &:hover {
@@ -349,7 +413,20 @@ const Buttons1 = styled.button`
   }
 `;
 
+const Buttons = styled.button`
+  background-color: ${(props) => (props.selected ? 'white' : '#007bff')};
+  color: ${(props) => (props.selected ? '#007bff' : 'white')};
+  border: ${(props) => (props.selected ? '2px solid black' : 'none')};
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
 
+  &:hover {
+    background-color: ${(props) => (props.selected ? '#0072C2' : '#0056b3')};
+    color: white;
+  }
+`;
 
 const Text = styled.p`
   margin-left: 20px;
@@ -401,21 +478,22 @@ const Modal = ({ children, show, onClose, title }) => {
   );
 };
 
-    
-    const Overlay = styled.div`
-      width: 100vw;
-      height: 100vh;
-      position: fixed;
-      top: 0;
-      left: 0;
-      background: rgba(0, 0, 0, 0.468);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 3;
-    `;
-    
-    const ContenedorModal = styled.div`
+
+
+const Overlay = styled.div`
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.468);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+`;
+
+const ContenedorModal = styled.div`
       width: 90%;
       max-width: 700px;
       height: auto;
@@ -494,13 +572,12 @@ const BotonCerrar = styled.button`
     `;
     
     export {
-      Options,
+      Modal,
       Menu,
       Tarjeta,
       Incidencia,
       Text,
       ButtonWrapper,
-      Modal,
       Overlay,
       ContenedorModal,
       EncabezadoModal,
