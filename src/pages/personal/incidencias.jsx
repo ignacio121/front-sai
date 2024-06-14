@@ -31,7 +31,7 @@ function IncidenciasPage() {
       console.log(categoriasHijo);
     }
     
-  }, [token, navigate, dispatch, sesion, incidencias]); // agregar sesion y token para produccion
+  }, [token, navigate, dispatch, sesion, incidencias, token]); // agregar sesion y token para produccion
   
   return (
     <>
