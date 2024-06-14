@@ -8,11 +8,11 @@ export const LOGOUT = 'LOGOUT';
 
 export const login = (rut, contraseña) => async (dispatch) => {
   dispatch({ type: LOGIN_REQUEST });
-  
+
   try {
     let userResponse = null;
     const { data: loginResponse } = await axios.post(`${URI}/api/auth/login`, { rut, contraseña });
-    
+
     const { token, userId, userType, rol, carrera_id } = loginResponse;
     localStorage.setItem('token', token);
 
@@ -30,10 +30,13 @@ export const login = (rut, contraseña) => async (dispatch) => {
         }
       });
       userResponse = data;
-    } 
+    }
 
     const sesion = { userId, userType, rol, carrera_id };
     localStorage.setItem('sesion', JSON.stringify(sesion));
+
+    // Imprimir valores del usuario en la consola
+  
 
     dispatch({ type: LOGIN_SUCCESS, payload: { token, sesion, user: userResponse } });
 
