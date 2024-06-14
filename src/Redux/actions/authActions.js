@@ -10,20 +10,22 @@ export const login = (rut, contraseña) => async (dispatch) => {
   dispatch({ type: LOGIN_REQUEST });
 
   try {
-    let userResponse = null;
     const { data: loginResponse } = await axios.post(`${URI}/api/auth/login`, { rut, contraseña });
-
     const { token, userId, userType, rol, carrera_id } = loginResponse;
-    localStorage.setItem('token', token);
 
-    if (loginResponse && userType === 'alumno') {
+    // Almacenar token y loginResponse en localStorage
+    localStorage.setItem('token', token);
+    localStorage.setItem('loginResponse', JSON.stringify(loginResponse));
+
+    let userResponse = null;
+    if (userType === 'alumno') {
       const { data } = await axios.get(`${URI}/alumnos/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       userResponse = data;
-    } else if (loginResponse && userType === 'personal') {
+    } else if (userType === 'personal') {
       const { data } = await axios.get(`${URI}/personal/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -34,9 +36,6 @@ export const login = (rut, contraseña) => async (dispatch) => {
 
     const sesion = { userId, userType, rol, carrera_id };
     localStorage.setItem('sesion', JSON.stringify(sesion));
-
-    // Imprimir valores del usuario en la consola
-  
 
     dispatch({ type: LOGIN_SUCCESS, payload: { token, sesion, user: userResponse } });
 
