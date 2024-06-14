@@ -40,4 +40,4 @@ jobs:
           app-name: 'Front-sai'
           slot-name: 'production'
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_dd9495e1bafd428cb8523e768f895a0e }}
-          images: 'index.docker.io/${{ secrets.DOCKER_USERNAME }}/ignacio121/build-front-sai:${{ github.sha }}'
+          images: 'index.docker.io/${{ secrets.DOCKER_USERNAME }}/build-front-sai:${{ github.sha }}'
