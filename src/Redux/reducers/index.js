@@ -6,10 +6,6 @@ import incidenciasReducer from './incidenciasReducer';
 import navReducer from './navReducer';
 import preguntasFrecuentesReducer from './preguntasFrecuentesReducer';
 
-
-
-
-
 const rootReducer = combineReducers({
   auth: authReducer,
   nav: navReducer,

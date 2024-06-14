@@ -5,24 +5,25 @@ export const TopNavBar = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  height: 55px;
-  background-color: rgb(26, 77, 171);
+  height: 65px;
+  background-color: #1e98d7;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   z-index: 1000;
+  font-family: "Bahnschrift Bold", "Bahnschrift", sans-serif;
 `;
 
 export const SideNavBar = styled.div`
   position: fixed;
-  top: 55px;
+  top: 65px;
   left: 0;
-  width: 200px;
-  background-color: rgb(26, 77, 171);
+  width: 250px;
+  background-color: #1e98d7;
   color: white;
-  height: calc(100% - 55px);
+  height: calc(100%);
   box-sizing: border-box;
 `;
 
@@ -31,13 +32,14 @@ export const Button = styled.button`
   width: 100%;
   padding: 10px;
   height: 50px;
-  background-color: rgb(26, 77, 171);
+  background-color: #1e98d7;
   color: white;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   border-top: 1px solid rgba(255, 255, 255, 0.58);
+  font-family: "Bahnschrift Bold", "Bahnschrift", sans-serif;
   cursor: pointer;
 
   ${props =>
@@ -46,14 +48,14 @@ export const Button = styled.button`
       box-sizing: border-box;
       box-shadow: 0px 0px 0px 0px rgba(0, 0, 255, 0.59),
         inset 0px 0px 4px 0px rgba(255, 255, 255, 0.35);
-      background-color: rgb(23, 69, 156);
+      background-color: #1b78a6;
     `}
 
   &:hover {
     box-sizing: border-box;
     box-shadow: 0px 0px 0px 0px rgba(0, 0, 255, 0.59),
       inset 0px 0px 4px 0px rgba(255, 255, 255, 0.35);
-    background-color: rgb(23, 69, 156);
+    background-color: #1b78a6;
   }
 `;
 
@@ -86,17 +88,21 @@ export const Dropdown = styled.div`
   animation: ${props => (props.visible ? expand : collapse)} 0.3s ease-out;
   padding-left: 10px;
   transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
-  background-color: rgb(23, 69, 156);
+  background-color: #1b78a6;
 `;
 
 export const Content = styled.div`
-  margin-left: 0;
   padding: 20px;
-  padding-top: 75px;
-  overflow: auto; 
+  padding-top: 85px;
+  overflow: auto;
+  top: 0;
+  bottom: 0;
   background-color: rgba(255, 255, 255, 1);
-  height: calc(100vh - 55px);
+  height: calc(100vh - 105px);
   width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const MainContainer = styled.div`
@@ -108,5 +114,5 @@ export const MainContainer = styled.div`
 export const ContentWrapper = styled.div`
   display: flex;
   flex: 1;
-  margin-left: 200px;
+  margin-left: 250px;
 `;
