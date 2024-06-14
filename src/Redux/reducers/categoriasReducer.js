@@ -1,21 +1,16 @@
 import {
-
- CATEGORIAS_REQUEST,
+  CATEGORIAS_REQUEST,
   CATEGORIAS_SUCCESS,
   CATEGORIAS_FAILURE
 } from '../actions/categoriaActions';
 
 
-
-
 const initialState = {
   loading: false,
-  isAuthenticated: !!localStorage.getItem('token'),
-  sesion: null,
-  user: null,
   token: localStorage.getItem('token') || null,
   error: null,
-  categorias: []
+  categoriasPadre: [],
+  categoriasHijo: []
 };
 
 const categoriasReducer = (state = initialState, action) => {
@@ -32,7 +27,8 @@ const categoriasReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        categorias: action.payload
+        categoriasPadre: action.payload.categoriasPadre,
+        categoriasHijo: action.payload.categoriasHijo
       };
     case CATEGORIAS_FAILURE:
       return {

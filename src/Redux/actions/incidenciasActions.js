@@ -19,7 +19,11 @@ export const getIncidenciasPersonal = (personal, token) => async (dispatch) => {
       }
     });
 
-    dispatch({ type: INCIDENCIAS_SUCCESS, payload: incidenciaPersonalResponse });
+    const modifiedData = incidenciaPersonalResponse.map(incidencia => ({ ...incidencia,
+      estado: incidencia.respuestaincidencia.length === 0
+    }));
+
+    dispatch({ type: INCIDENCIAS_SUCCESS, payload: modifiedData });
 
   } catch (error) {
     dispatch({
