@@ -78,17 +78,19 @@ const TabContent = styled.div`
     }));
     setSelectedFiles(filesWithPreview);
   };
-
+  const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
+  console.log("response",loginResponse.carrera_id)
   const handleSubmit = () => {
     const data = {
-      alumno_id: '13',
+      alumno_id: loginResponse.userId,
       categoriaincidencia_id: selected,
       descripcion,
       prioridad: selectedPriority,
-      carrera_id: '2',
+      carrera_id: loginResponse.carrera_id,
       archivo: selectedFiles.map((fileObj) => fileObj.file),
-      personal_id: '7',
+      personal_id: selectedDestinatario.id,
     };
+    console.log(data)
     dispatch(postIncidencia(data))
       .then(() => {
         // Si la solicitud es exitosa, muestra un SweetAlert de éxito
@@ -156,20 +158,20 @@ const TabContent = styled.div`
         </Incidencia>
 
         <div>
-      <Incidencia color="#0072C2" onClick={handleMostrarFAQ}>
-        <MdHelp size={26} color="white" />
-        <span>Preguntas frecuentes</span>
+      <Incidencia color="#0072C2"  onClick={handleMostrarFAQ}>
+        <MdHelp size={26} color="white" style={{marginLeft:'3%'}}/>
+        <span style={{marginLeft:'4%'}}>Preguntas frecuentes</span>
       </Incidencia>
       
       {mostrarFAQ && <FAQComponent />} {/* Renderiza FAQComponent si mostrarFAQ es true */}
     </div>
         <Incidencia color="#008ACB" onClick={() => handleButtonClick('foro_estudiantil')}>
-          <MdEdit size={26} color="white" />
+          <MdEdit size={26} color="white" style={{marginLeft:'3%'}} />
           <Text>Foro estudiantil</Text>
         </Incidencia>
 
         <Incidencia color="#00A1E4" onClick={() => handleButtonClick('estado_incidencias')}>
-          <MdTask size={26} color="white" />
+          <MdTask size={26} color="white" style={{marginLeft:'3%'}} />
           <Text>Estado Incidencias</Text>
         </Incidencia>
       </Menu>
