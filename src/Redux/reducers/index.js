@@ -5,10 +5,6 @@ import destinatariosReducer from './destinatariosReducer';
 import incidenciasReducer from './incidenciasReducer';
 import navReducer from './navReducer';
 
-
-
-
-
 const rootReducer = combineReducers({
   auth: authReducer,
   nav: navReducer,

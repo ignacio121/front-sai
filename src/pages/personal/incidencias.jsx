@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../Redux/actions/authActions';
 import { getIncidenciasPersonal } from '../../Redux/actions/incidenciasActions';
+import { Categoria, Estado, Fecha, IncidenciasContainer, IncidenciasMainContainer, MensajeView, Prioridad, Separador, UltimoMensaje } from '../../style/incidencia.style';
 
 function IncidenciasPage() {
   const navigate = useNavigate();
@@ -13,11 +14,11 @@ function IncidenciasPage() {
   useEffect(() => {
     if (!token) {
       navigate('/');
-    } else {
-      console.log(incidencias)
+    } else if (!incidencias) {
       dispatch(getIncidenciasPersonal(sesion.userId, token))
     }
-  }, [token, navigate, dispatch, sesion, token]); // agregar sesion y token para produccion
+    console.log(incidencias)
+  }, [token, navigate, dispatch, sesion, incidencias]); // agregar sesion y token para produccion
 
   const handleLogout = () => {
     dispatch(logout());
@@ -28,8 +29,86 @@ function IncidenciasPage() {
     <>
       {token ? (
         <>
-          <button onClick={handleLogout}>Logout</button>
-          <p>incidencia Page</p>
+          
+          <IncidenciasMainContainer>
+          <IncidenciasContainer>
+              <Estado/>
+              <Prioridad> Alta </Prioridad>
+              <Separador/>
+              <Categoria> Ramos </Categoria>
+              <Separador/>
+              <UltimoMensaje> Envió este comunicado, debido a que las salas las cuales estamos tenie... </UltimoMensaje>
+              <MensajeView/>
+              <Separador/>
+              <Fecha> 22-04-2022 </Fecha>
+            </IncidenciasContainer>
+            <IncidenciasContainer>
+              <Estado/>
+              <Prioridad> Alta </Prioridad>
+              <Separador/>
+              <Categoria> Ramos </Categoria>
+              <Separador/>
+              <UltimoMensaje> Envió este comunicado, debido a que las salas las cuales estamos tenie... </UltimoMensaje>
+              <MensajeView/>
+              <Separador/>
+              <Fecha> 22-04-2022 </Fecha>
+            </IncidenciasContainer>
+            <IncidenciasContainer>
+              <Estado/>
+              <Prioridad> Alta </Prioridad>
+              <Separador/>
+              <Categoria> Ramos </Categoria>
+              <Separador/>
+              <UltimoMensaje> Envió este comunicado, debido a que las salas las cuales estamos tenie... </UltimoMensaje>
+              <MensajeView/>
+              <Separador/>
+              <Fecha> 22-04-2022 </Fecha>
+            </IncidenciasContainer>
+            <IncidenciasContainer>
+              <Estado/>
+              <Prioridad> Alta </Prioridad>
+              <Separador/>
+              <Categoria> Ramos </Categoria>
+              <Separador/>
+              <UltimoMensaje> Envió este comunicado, debido a que las salas las cuales estamos tenie... </UltimoMensaje>
+              <MensajeView/>
+              <Separador/>
+              <Fecha> 22-04-2022 </Fecha>
+            </IncidenciasContainer>
+            <IncidenciasContainer>
+              <Estado/>
+              <Prioridad> Alta </Prioridad>
+              <Separador/>
+              <Categoria> Ramos </Categoria>
+              <Separador/>
+              <UltimoMensaje> Envió este comunicado, debido a que las salas las cuales estamos tenie... </UltimoMensaje>
+              <MensajeView/>
+              <Separador/>
+              <Fecha> 22-04-2022 </Fecha>
+            </IncidenciasContainer>
+            <IncidenciasContainer>
+              <Estado/>
+              <Prioridad> Alta </Prioridad>
+              <Separador/>
+              <Categoria> Ramos </Categoria>
+              <Separador/>
+              <UltimoMensaje> Envió este comunicado, debido a que las salas las cuales estamos tenie... </UltimoMensaje>
+              <MensajeView/>
+              <Separador/>
+              <Fecha> 22-04-2022 </Fecha>
+            </IncidenciasContainer>
+            <IncidenciasContainer>
+              <Estado/>
+              <Prioridad> Alta </Prioridad>
+              <Separador/>
+              <Categoria> Ramos </Categoria>
+              <Separador/>
+              <UltimoMensaje> Envió este comunicado, debido a que las salas las cuales estamos tenie... </UltimoMensaje>
+              <MensajeView/>
+              <Separador/>
+              <Fecha> 22-04-2022 </Fecha>
+            </IncidenciasContainer>
+          </IncidenciasMainContainer>
         </>
       ) : (
         <p>Acceso denegado. Por favor, inicia sesión para acceder a esta página.</p>
