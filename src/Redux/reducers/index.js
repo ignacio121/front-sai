@@ -4,6 +4,7 @@ import categoriasReducer from './categoriasReducer';
 import destinatariosReducer from './destinatariosReducer';
 import incidenciasReducer from './incidenciasReducer';
 import navReducer from './navReducer';
+import preguntasFrecuentesReducer from './preguntasFrecuentesReducer';
 
 
 
@@ -15,7 +16,7 @@ const rootReducer = combineReducers({
   incidencias: incidenciasReducer,
   categorias : categoriasReducer,
   destinatarios : destinatariosReducer,
-  // otros reducers pueden ir aquí
+  preguntasFrecuentes :preguntasFrecuentesReducer
 });
 
 export default rootReducer;
