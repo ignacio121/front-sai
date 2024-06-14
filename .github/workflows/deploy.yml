@@ -32,8 +32,11 @@ jobs:
         with:
           context: .
           push: true
-          tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_266c7797b27448aba19350fbdd47db9e }}/ignacio121/build-front-sai:${{ github.sha }}
+          tags: |
+            index.docker.io/${{ secrets.AzureAppService_ContainerUsername_266c7797b27448aba19350fbdd47db9e }}/ignacio121/build-front-sai:latest
+            index.docker.io/${{ secrets.AzureAppService_ContainerUsername_266c7797b27448aba19350fbdd47db9e }}/ignacio121/build-front-sai:${{ github.sha }}
           file: ./Dockerfile
+        
 
   deploy:
     runs-on: ubuntu-latest
