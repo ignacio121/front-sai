@@ -19,9 +19,21 @@ export const getIncidenciasPersonal = (personal, token) => async (dispatch) => {
       }
     });
 
-    const modifiedData = incidenciaPersonalResponse.map(incidencia => ({ ...incidencia,
-      estado: incidencia.respuestaincidencia.length === 0
-    }));
+    const modifiedData = incidenciaPersonalResponse.map(incidencia => {
+      let estado = "pendiente";
+      if (incidencia.respuestaincidencia && incidencia.respuestaincidencia.length > 0) {
+        estado = "atendida"; // por ejemplo, cambia el estado si hay respuestas
+      } if (incidencia.estado === "cerrada") {
+        estado = "rechazada"
+      } if (incidencia.reabierta) {
+        estado = "Aceptada"
+      } 
+  
+      return {
+        ...incidencia,
+        estado: estado
+      };
+    });
 
     dispatch({ type: INCIDENCIAS_SUCCESS, payload: modifiedData });
 
