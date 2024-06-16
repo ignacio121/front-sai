@@ -1,63 +1,66 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../Redux/actions/authActions';
+import { format } from 'date-fns';
 import { getIncidenciasPersonal } from '../../Redux/actions/incidenciasActions';
-import { getCategorias } from '../../Redux/actions/categoriaActions';
 import { Categoria, Estado, Fecha, IncidenciasContainer, IncidenciasMainContainer, MensajeView, Prioridad, Separador, UltimoMensaje } from '../../style/incidencia.style';
+import ReplyIncident from '../../components/replyIncident';
+import LoaderComponent from '../../components/loader';
 
 function IncidenciasPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { sesion, token } = useSelector((state) => state.auth);
-  const { incidencias } = useSelector((state) => state.incidencias);
-  const { categoriasPadre, categoriasHijo } = useSelector((state) => state.categorias);
+  const { incidencias, loading } = useSelector((state) => state.incidencias);
 
+  const [stateReplyIncident,changeReplyIncident] = useState({activo: false, incidencia: null});
+
+  const ultimaRespuesta = (respuestas) => {
+    if (respuestas.length === 0) {
+      return false;
+    }
+    const ultimaRespuesta = respuestas[respuestas.length - 1];
+    return ultimaRespuesta.remitente_tipo !== sesion.userType;
+  };
+
+  const OpenReplyIncident = (incidencia) => {
+    changeReplyIncident({activo: true, incidencia: incidencia})
+  };
 
   useEffect(() => {
     if (!token) {
       navigate('/');
     } else {
-      if (!incidencias) {
         dispatch(getIncidenciasPersonal(sesion.userId, token));
-      }
-      if (categoriasPadre.length || categoriasHijo.length === 0) {
-        dispatch(getCategorias());
-      }
     }
-    if (incidencias) {
-      console.log(incidencias)
-      console.log(categoriasPadre);
-      console.log(categoriasHijo);
-    }
-    
-  }, [token, navigate, dispatch, sesion, incidencias, token]); // agregar sesion y token para produccion
+  }, [token, navigate, dispatch, sesion, incidencias]);
   
   return (
     <>
-      {token ? (
+      {loading || incidencias ? (
         <>   
           <IncidenciasMainContainer>
           {incidencias && incidencias.map(incidencia =>(
-            <IncidenciasContainer key={incidencia.id}>
-                <div>{incidencia.estado}</div>
-                {console.log(incidencia)}
-                <Estado/>
-                <Prioridad> Alta </Prioridad>
+            <IncidenciasContainer key={incidencia.id} onClick={() => OpenReplyIncident(incidencia)}>
+                <Estado estado={incidencia.estado}/>
+                <Prioridad> {incidencia.prioridad} </Prioridad>
                 <Separador/>
-                <Categoria> Ramos </Categoria>
+                <Categoria> {incidencia.categoriaNombre} </Categoria>
                 <Separador/>
-                <UltimoMensaje> Envió este comunicado, debido a que las salas las cuales estamos tenie... </UltimoMensaje>
-                <MensajeView/>
+                <UltimoMensaje> {incidencia.descripcion} </UltimoMensaje>
+                <MensajeView ultimaRespuesta={ultimaRespuesta(incidencia.respuestaincidencia)}/>
                 <Separador/>
-                <Fecha> 22-04-2022 </Fecha>
+                <Fecha>{format(new Date(incidencia.fechahoracreacion), 'dd-MM-yyyy')}</Fecha>
               </IncidenciasContainer>
             ))}
           </IncidenciasMainContainer>
+
+
+          {stateReplyIncident.incidencia && <ReplyIncident state={stateReplyIncident.activo} changeState={changeReplyIncident} incidencia={stateReplyIncident.incidencia}/>}
         </>
       ) : (
-        <p>Acceso denegado. Por favor, inicia sesión para acceder a esta página.</p>
-      )}
+        <LoaderComponent/>
+      )} 
     </>
   );
 }

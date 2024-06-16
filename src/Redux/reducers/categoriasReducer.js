@@ -21,8 +21,6 @@ const categoriasReducer = (state = initialState, action) => {
         loading: true,
         error: null
       };
-  
-    
     case CATEGORIAS_SUCCESS:
       return {
         ...state,

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { URI } from '../config';
+import { getCategorias } from './categoriaActions';
 
 export const INCIDENCIAS_REQUEST = 'INCIDENCIAS_REQUEST';
 export const INCIDENCIAS_SUCCESS = 'INCIDENCIAS_SUCCESS';
@@ -9,29 +10,49 @@ export const POST_INCIDENCIA_REQUEST = 'POST_INCIDENCIA_REQUEST';
 export const POST_INCIDENCIA_SUCCESS = 'POST_INCIDENCIA_SUCCESS';
 export const POST_INCIDENCIA_FAILURE = 'POST_INCIDENCIA_FAILURE';
 
-export const getIncidenciasPersonal = (personal, token) => async (dispatch) => {
+export const INCIDENCIAS_REPLY_REQUEST = 'INCIDENCIAS_REPLY_REQUEST';
+export const INCIDENCIAS_REPLY_SUCCESS = 'INCIDENCIAS_REPLY_SUCCESS';
+export const INCIDENCIAS_REPLY_FAILURE = 'INCIDENCIAS_REPLY_FAILURE';
+
+export const INCIDENCIAS_CONFIRM_REQUEST = 'INCIDENCIAS_CONFIRM_REQUEST';
+export const INCIDENCIAS_CONFIRM_SUCCESS = 'INCIDENCIAS_CONFIRM_SUCCESS';
+export const INCIDENCIAS_CONFIRM_FAILURE = 'INCIDENCIAS_CONFIRM_FAILURE';
+
+export const getIncidenciasPersonal = (personal, token) => async (dispatch, getState) => {
+  await dispatch(getCategorias());
+  
   dispatch({ type: INCIDENCIAS_REQUEST });
 
   try {
+    const {categoriasHijo, categoriasPadre} = getState().categorias;
+
     const { data: incidenciaPersonalResponse } = await axios.get(`${URI}/api/incidencia/porPersonal/${personal}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
 
+    const getCategoriaNombre = (categoriaId) => {
+      const categoria = categoriasHijo.find(cat => cat.id === categoriaId) || categoriasPadre.find(cat => cat.id === categoriaId);
+      return categoria ? categoria.nombre : 'Desconocida';
+    };
+    
     const modifiedData = incidenciaPersonalResponse.map(incidencia => {
-      let estado = "pendiente";
+      let estado = "Pendiente";
       if (incidencia.respuestaincidencia && incidencia.respuestaincidencia.length > 0) {
-        estado = "atendida"; // por ejemplo, cambia el estado si hay respuestas
-      } if (incidencia.estado === "cerrada") {
-        estado = "rechazada"
-      } if (incidencia.reabierta) {
-        estado = "Aceptada"
-      } 
-  
+        estado = "Atendida";
+      }
+      if (incidencia.estado === "cerrada") {
+        estado = "Rechazada";
+      }
+      if (incidencia.reabierta) {
+        estado = "Aceptada";
+      }
+
       return {
         ...incidencia,
-        estado: estado
+        estado: estado,
+        categoriaNombre: getCategoriaNombre(incidencia.categoriaincidencia_id)
       };
     });
 
@@ -44,6 +65,7 @@ export const getIncidenciasPersonal = (personal, token) => async (dispatch) => {
     });
   }
 };
+
 
 export const postIncidencia = (incidenciaData) => async (dispatch, getState) => {
   dispatch({ type: POST_INCIDENCIA_REQUEST });
@@ -73,6 +95,78 @@ export const postIncidencia = (incidenciaData) => async (dispatch, getState) => 
   } catch (error) {
     dispatch({
       type: POST_INCIDENCIA_FAILURE,
+      error: error.response ? error.response.data : { message: error.message }
+    });
+  }
+};
+
+export const replyIncidencia = (incidencia_id, contenido, remitente_id, remitente_tipo) => async (dispatch, getState) => {
+  dispatch({ type: INCIDENCIAS_REPLY_REQUEST });
+  try {
+      const token = getState().auth.token;
+
+      await axios.post(`${URI}/api/incidencia/responder`, { incidencia_id, contenido, remitente_id, remitente_tipo },{
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      });
+      
+      dispatch({ type: INCIDENCIAS_REPLY_SUCCESS});
+      
+  } catch (error) {
+      console.error('Error respondiendo mensajes:', error);
+      dispatch({
+          type: INCIDENCIAS_REPLY_FAILURE,
+          error: error.response ? error.response.data : {
+              message: error.message
+          }
+      });
+  }
+};
+
+export const confirmReplyIncidencia = (incidencia_id) => async (dispatch, getState) => {
+  dispatch({ type: INCIDENCIAS_CONFIRM_REQUEST });
+  try {
+    const token = getState().auth.token;
+
+
+    const response = await axios.put(`${URI}/api/incidencia/reabrir/${incidencia_id}`, null, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    console.log(response.data)
+
+    dispatch({ type: INCIDENCIAS_CONFIRM_SUCCESS , payload: response.data });
+  } catch (error) {
+    console.error('Error al confirmar respuesta de la incidencia:', error);
+    dispatch({
+      type: INCIDENCIAS_CONFIRM_FAILURE,
+      error: error.response ? error.response.data : { message: error.message }
+    });
+  }
+};
+
+export const rejectIncidencia = (incidencia_id) => async (dispatch, getState) => {
+  dispatch({ type: INCIDENCIAS_CONFIRM_REQUEST });
+  try {
+    const token = getState().auth.token;
+
+
+    const response = await axios.put(`${URI}/api/incidencia/cerrar/${incidencia_id}`, null, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    console.log(response.data)
+
+    dispatch({ type: INCIDENCIAS_CONFIRM_SUCCESS , payload: response.data });
+  } catch (error) {
+    console.error('Error al rechazar respuesta de la incidencia:', error);
+    dispatch({
+      type: INCIDENCIAS_CONFIRM_FAILURE,
       error: error.response ? error.response.data : { message: error.message }
     });
   }

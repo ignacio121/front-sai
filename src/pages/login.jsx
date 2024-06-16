@@ -20,7 +20,7 @@ function Login() {
   const handleAuth = (e) => {
     e.preventDefault();
     if ( !(/^\d{8}$/).test(Rut) ){
-      setAuthError({message: 'Por favor ingresa un rut valido', state:'true'});
+      setAuthError({message: 'Por favor ingresa un rut valido', state:true});
     } else {
       dispatch(login(Rut, Password));
     }
@@ -28,7 +28,7 @@ function Login() {
 
   useEffect(() => {
     if (error && error.message) {
-        setAuthError({message:error.message, state:'true'});
+        setAuthError({message:error.message, state:true});
     }
 
     if (isAuthenticated) {

@@ -12,8 +12,8 @@ export const TopNavBar = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  z-index: 1000;
   font-family: "Bahnschrift Bold", "Bahnschrift", sans-serif;
+  z-index: 1;
 `;
 
 export const SideNavBar = styled.div`
