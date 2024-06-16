@@ -13,8 +13,6 @@ export const login = (rut, contraseña) => async (dispatch) => {
     const { data: loginResponse } = await axios.post(`${URI}/api/auth/login`, { rut, contraseña });
     const { token, userId, userType, rol, carrera_id } = loginResponse;
 
-    // Almacenar token y loginResponse en localStorage
-    localStorage.setItem('token', token);
     localStorage.setItem('loginResponse', JSON.stringify(loginResponse));
 
     let userResponse = null;
@@ -36,6 +34,7 @@ export const login = (rut, contraseña) => async (dispatch) => {
 
     const sesion = { userId, userType, rol, carrera_id };
     localStorage.setItem('sesion', JSON.stringify(sesion));
+    localStorage.setItem('user', JSON.stringify(userResponse));
 
     dispatch({ type: LOGIN_SUCCESS, payload: { token, sesion, user: userResponse } });
 

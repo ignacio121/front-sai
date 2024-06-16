@@ -120,10 +120,10 @@ export const Error = styled.h1`
     display: none;
     margin-bottom: 30vh;
     font-family: "Bahnschrift Bold", "Bahnschrift", sans-serif;
-    ${props => props.error === 'false' && css`
+    ${props => props.error === false && css`
         display: none;
     `}
-    ${props => props.error === 'true' && css`
+    ${props => props.error === true && css`
         display: block;
     `}
 `;

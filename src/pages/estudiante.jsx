@@ -13,7 +13,7 @@ function EstudiantePage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, token, loading, error } = useSelector((state) => state.auth);
-  const { categorias } = useSelector((state) => state.categorias);
+  const { categoriasPadre, categoriasHijo } = useSelector((state) => state.categorias);
   const { destinatarios } = useSelector((state) => state.destinatarios);
   const { preguntasFrecuentes } = useSelector((state) => state.preguntasFrecuentes);
 
@@ -28,10 +28,10 @@ function EstudiantePage() {
   }, [token, navigate, dispatch]);
 
   useEffect(() => {
-    if (categorias.length > 0) {
-      console.log('Categorías:', categorias);
+    if (categoriasPadre.length > 0 && categoriasPadre.length > 0) {
+      console.log('Categorías:', categoriasPadre);
     }
-  }, [categorias]);
+  }, [categoriasPadre]);
 
   useEffect(() => {
     if (destinatarios.length > 0) {
@@ -75,7 +75,7 @@ function EstudiantePage() {
                 carreraId={user?.carrera_id}  // Pasar carrera_id desde user
               />
               <Options 
-                categorias={categorias}
+                categorias={categoriasPadre}
                 destinatarios={destinatarios} 
               />
               {loading ? (
