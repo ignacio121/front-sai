@@ -50,7 +50,10 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
       dispatch(replyIncidencia(incidencia.id, message, sesion.userId, sesion.userType));
       setMessages([...messages, newMessage]);
       setMessage('');
-      setEstadoIncidencia('Atendida')
+      console.log(alumnoInfo)
+      if (alumnoInfo){
+        setEstadoIncidencia('Atendida')
+      }
     }
   };
 
@@ -147,8 +150,7 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
                 <Info>
                   <BoldText>Archivos:</BoldText>
                   <ArchivoBox>
-                    
-                    {incidencia.archivo && incidencia.archivos.length > 0 ? (
+                    {incidencia.archivos && incidencia.archivos.length > 0 ? (
                       incidencia.archivos.map((archivo) => (
                         <ArchivoItem key={archivo.id}>
                           <a href={archivo.archivo_url} target="_blank" rel="noopener noreferrer">
@@ -199,6 +201,11 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
                       </div>
                     </ContenedorMessage>
                   ))}
+                  {(EstadoIncidencia === 'Aceptada' || EstadoIncidencia === 'Rechazada') && 
+                    <EstadoIncidenciaBox estado={EstadoIncidencia}>
+                      {EstadoIncidencia === 'Aceptada' ? 'La incidencia ha sido aceptada' : 'La incidencia ha sido rechazada'}
+                    </EstadoIncidenciaBox>
+                  }
                 </ChatMessages>
                 <SendMessageContainer>
                   <SendMessage
@@ -432,7 +439,7 @@ const Remitente = styled.div`
   font-size: 20px;
   font-weight: bold;
   font-family: "Bahnschrift", sans-serif;
-  flex-shrink: 0; /* Prevents the circle from shrinking */
+  flex-shrink: 0;
 `;
 
 export const Fecha = styled.div`
@@ -459,6 +466,21 @@ export const Contenido = styled.div`
   overflow: visible;
   white-space: normal;
   word-break: break-word;
+`;
+
+const EstadoIncidenciaBox = styled.div`
+  background-color: ${props => props.estado === 'Aceptada' ? 'rgba(154, 255, 145, 0.73)' : props.estado === 'Rechazada' ? '#ff8484': 'white'};
+  border-radius: 7px;
+  border: 1px solid ${props => props.estado === 'Aceptada' ? '#14ff00' : props.estado === 'Rechazada' ? '#ff1515': 'white'};
+  box-sizing: border-box;
+  box-shadow: 0px 0px 11px 0px #afafaf;
+  font-family: "Bahnschrift Light", "Bahnschrift", sans-serif;
+  font-weight: 300;
+  color: ${props => props.estado === 'Aceptada' ? '#14ff00' : props.estado === 'Rechazada' ? '#ff1515': 'white'};
+  text-align: center;
+  line-height: normal;
+  margin-top: 10px;
+  width: auto;
 `;
 
 const SendMessageContainer = styled.div`

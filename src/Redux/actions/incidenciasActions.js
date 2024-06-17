@@ -53,7 +53,12 @@ export const getIncidencias = (id, personal_type, token) => async (dispatch, get
 
     const modifiedData = incidenciaResponse.map(incidencia => {
       let estado = "Pendiente";
-      if (incidencia.respuestaincidencia && incidencia.respuestaincidencia.length > 0) {
+
+      const tieneRespuestaDePersonal = incidencia.respuestaincidencia.some(
+        respuesta => respuesta.remitente_tipo === 'personal'
+      );
+
+      if (tieneRespuestaDePersonal) {
         estado = "Atendida";
       }
       if (incidencia.estado === "cerrada") {

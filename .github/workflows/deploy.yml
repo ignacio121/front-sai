@@ -3,6 +3,8 @@ name: Build and deploy container in DockerHub
 on:
   push:
     branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
   build:

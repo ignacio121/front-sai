@@ -20,9 +20,15 @@ function IncidenciasPage() {
   const [incidenciasPerPage] = useState(7); // Número de incidencias por página
   const [currentIncidencias, setCurrentIncidencias] = useState([]);
 
-  const ultimaRespuesta = (respuestas) => {
-    if (respuestas.length === 0) {
+  const ultimaRespuesta = (incidencia) => {
+
+    const respuestas = incidencia.respuestaincidencia;
+
+    if (respuestas.length === 0 && sesion.userType === 'alumno') {
       return false;
+    }
+    if (respuestas.length === 0 && sesion.userType === 'personal') {
+      return true;
     }
     const ultimaRespuesta = respuestas[respuestas.length - 1];
     return ultimaRespuesta.remitente_tipo !== sesion.userType;
@@ -38,21 +44,20 @@ function IncidenciasPage() {
     } else {
       dispatch(getIncidencias(sesion.userId, sesion.userType, token));
     }
-    if (incidencias){
+    if (incidencias && sesion.userType === 'personal'){
       const indexOfLastIncidencia = currentPage * incidenciasPerPage;
       const indexOfFirstIncidencia = indexOfLastIncidencia - incidenciasPerPage;
       setCurrentIncidencias(incidencias.slice(indexOfFirstIncidencia, indexOfLastIncidencia))
+    } else if (incidencias && sesion.userType === 'alumno'){
+      setCurrentIncidencias(incidencias)
     }
   }, [token, navigate, dispatch, sesion, currentPage, incidencias, incidenciasPerPage]);
-
-  
-  // Cambiar de página
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <>
-      {loading || currentIncidencias ? (
+      {loading || currentIncidencias.length > 0 ? (
         <>
           <IncidenciasMainContainer>
             {currentIncidencias.map(incidencia => (
@@ -63,7 +68,7 @@ function IncidenciasPage() {
                 <Categoria> {incidencia.categoriaNombre} </Categoria>
                 <Separador />
                 <UltimoMensaje> {incidencia.descripcion} </UltimoMensaje>
-                <MensajeView ultimaRespuesta={ultimaRespuesta(incidencia.respuestaincidencia)} />
+                <MensajeView ultimaRespuesta={ultimaRespuesta(incidencia)} />
                 <Separador />
                 <Fecha>{format(new Date(incidencia.fechahoracreacion), 'dd-MM-yyyy')}</Fecha>
               </IncidenciasContainer>
