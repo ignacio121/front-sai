@@ -32,6 +32,10 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
   };
 
   const handleSendClick = () => {
+    if (message.trim() === '') {
+      return;
+    }
+
     if(!(EstadoIncidencia !== 'Pendiente' && EstadoIncidencia !== 'Atendida')){
       const newMessage = {
         id: Date.now(),
@@ -158,7 +162,7 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
                   </ArchivoBox>
                 </Info>
                 <br/>
-                { !(EstadoIncidencia !== 'Pendiente' && EstadoIncidencia !== 'Atendida') &&
+                { !(EstadoIncidencia !== 'Pendiente' && EstadoIncidencia !== 'Atendida') && alumnoInfo &&
                   <ButtonContainer>
                     <Button reject onClick={() => openConfirm(false)}>Rechazar</Button>
                     <Button accept onClick={() => openConfirm(true)}>Aceptar</Button>
@@ -179,8 +183,6 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
                   {messages.map((respuesta) => (
                     <ContenedorMessage key={respuesta.id}>
                       <Remitente>
-                        {console.log(user)}
-                        {console.log(alumnoInfo)}
                         {obtenerIniciales(
                           respuesta.remitente_tipo === 'alumno' && !alumnoInfo
                             ? `${user.nombre} ${user.apellido}`

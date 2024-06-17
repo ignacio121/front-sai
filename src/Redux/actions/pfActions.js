@@ -10,7 +10,6 @@ export const fetchPreguntasFrecuentes = () => async (dispatch, getState) => {
 
   try {
     const token = getState().auth.token; 
-    console.log('Token:', token);
 
     const response = await axios.get(`${URI}/api/faq`, {
       headers: {

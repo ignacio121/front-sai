@@ -68,7 +68,8 @@ function IncidenciasPage() {
                 <Fecha>{format(new Date(incidencia.fechahoracreacion), 'dd-MM-yyyy')}</Fecha>
               </IncidenciasContainer>
             ))}
-            {incidencias && 
+            
+            {incidencias && sesion.userType === 'personal' && 
             <Pagination
               incidenciasPerPage={incidenciasPerPage}
               totalIncidencias={incidencias.length}
