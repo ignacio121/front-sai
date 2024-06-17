@@ -19,7 +19,6 @@ export const getDestinatarios = () => async (dispatch, getState) => {
             }
         });
 
-        console.log('Response data:', response.data);
         dispatch({ type: DESTINATARIOS_SUCCESS, payload: response.data });
     } catch (error) {
         console.error('Error fetching destinatarios:', error);

@@ -13,11 +13,18 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
   const dispatch = useDispatch();
   const { estudiante } = useSelector((state) => state.estudiantes);
   const { sesion, user } = useSelector((state) => state.auth);
+  const { destinatarios } = useSelector((state) => state.destinatarios);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState(incidencia.respuestaincidencia);
   const [stateOpenConfirm,changeOpenConfirm] = useState({activo: false, type: null});
   const [EstadoIncidencia, setEstadoIncidencia] = useState(incidencia.estado);
-  const almunoInfo = incidencia.alumno;
+  const alumnoInfo = incidencia.alumno;
+
+  const filtrarDestinatario = (personalId) => {
+    return destinatarios.filter(destinatario => destinatario.id === personalId);
+  };
+
+  const destinatario = filtrarDestinatario(incidencia.personal_id)[0];
 
   const handleInputChange = (e) => {
     setMessage(e.target.value);
@@ -34,10 +41,12 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
         fecharespuesta: new Date().toISOString(),
         remitente_tipo: sesion.userType
       };
-  
-      dispatch(replyIncidencia(incidencia.id, message, incidencia.personal_id, sesion.userType));
+      console.log(newMessage)
+      console.log(sesion)
+      dispatch(replyIncidencia(incidencia.id, message, sesion.userId, sesion.userType));
       setMessages([...messages, newMessage]);
       setMessage('');
+      setEstadoIncidencia('Atendida')
     }
   };
 
@@ -72,11 +81,10 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
   useEffect(() => {
     if (!user) {
       navigate('/');
-    } else if (incidencia.alumno && almunoInfo.id) {
-      dispatch(getEstudiantesId(almunoInfo.id));
+    } else if (incidencia.alumno && alumnoInfo.id) {
+      dispatch(getEstudiantesId(alumnoInfo.id));
     }
-  }, [incidencia, almunoInfo.id, dispatch, user, navigate]);
-
+  }, [incidencia, alumnoInfo, dispatch, user, navigate]);
   return (
     <>
       {state &&
@@ -84,24 +92,25 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
           <ContenedorReplyIncident>
             <EncabezadoReplyIncident>
               {estudiante && estudiante.foto && (
-                <FotoEstudiante src={estudiante.foto} alt={`${almunoInfo.nombre} ${almunoInfo.apellido}`} />
+                <FotoEstudiante src={estudiante.foto} alt={`${alumnoInfo.nombre} ${alumnoInfo.apellido}`} />
               )}
               <LabelInfo>
-                <InfoEstudiante>
-                  <BoldText>Nombre:</BoldText> {almunoInfo.nombre} {almunoInfo.apellido}
-                </InfoEstudiante>
-                <InfoEstudiante>
-                  <BoldText>Carrera:</BoldText> {almunoInfo.carrera.nombre}
-                </InfoEstudiante>
+                <Info>
+                  <BoldText>Nombre:</BoldText> {alumnoInfo ? `${alumnoInfo.nombre} ${alumnoInfo.apellido}` : destinatario.nombre}
+                </Info>
+                <Info>
+                  <BoldText>Correo:</BoldText> {alumnoInfo ? alumnoInfo.email : destinatario.email}
+                </Info>
               </LabelInfo>
+              {alumnoInfo &&
               <LabelInfo>
-                <InfoEstudiante>
-                  <BoldText>Correo:</BoldText> {almunoInfo.email}
-                </InfoEstudiante>
-                <InfoEstudiante>
-                  <BoldText>Rut:</BoldText> {almunoInfo.rut}
-                </InfoEstudiante>
-              </LabelInfo>
+                <Info>
+                  <BoldText>Carrera:</BoldText> {alumnoInfo.carrera.nombre}
+                </Info>
+                <Info>
+                  <BoldText>Rut:</BoldText> {alumnoInfo.rut}
+                </Info>
+              </LabelInfo>}
             </EncabezadoReplyIncident>
             <BotonCerrar onClick={() => changeState(false)}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
@@ -111,30 +120,31 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
             <ContenidoReplyIncident>
               <ContenedorInfoIncidencia>
               <TitleInfo>Informacion Incidencia</TitleInfo>
-              <InfoEstudiante>
+              <Info>
                   <BoldText>Categoria:</BoldText> {incidencia.categoriaNombre}
-                </InfoEstudiante>
+                </Info>
                 <br/>
-                <InfoEstudiante>
+                <Info>
                   <BoldText>Prioridad:</BoldText> {incidencia.prioridad}
-                </InfoEstudiante>
+                </Info>
                 <br/>
-                <InfoEstudiante>
+                <Info>
                   <BoldText>Estado:</BoldText> {EstadoIncidencia}
-                </InfoEstudiante>
+                </Info>
                 <br/>
-                <InfoEstudiante>
+                <Info>
                   <BoldText>Fecha de inicio:</BoldText> {format(new Date(incidencia.fechahoracreacion), 'dd-MM-yyyy')}
-                </InfoEstudiante>
+                </Info>
                 <br/>
-                <InfoEstudiante>
+                <Info>
                   <BoldText>Fecha de finalización:</BoldText> {incidencia.fechahoracierre ? format(new Date(incidencia.fechahoracierre), 'dd-MM-yyyy') : 'Aún en curso'}
-                </InfoEstudiante>
+                </Info>
                 <br/>
-                <InfoEstudiante>
+                <Info>
                   <BoldText>Archivos:</BoldText>
                   <ArchivoBox>
-                    {incidencia.archivos.length > 0 ? (
+                    
+                    {incidencia.archivo && incidencia.archivos.length > 0 ? (
                       incidencia.archivos.map((archivo) => (
                         <ArchivoItem key={archivo.id}>
                           <a href={archivo.archivo_url} target="_blank" rel="noopener noreferrer">
@@ -146,7 +156,7 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
                       <SinArchivos>Sin archivos</SinArchivos>
                     )}
                   </ArchivoBox>
-                </InfoEstudiante>
+                </Info>
                 <br/>
                 { !(EstadoIncidencia !== 'Pendiente' && EstadoIncidencia !== 'Atendida') &&
                   <ButtonContainer>
@@ -159,7 +169,7 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
                 <ChatMessages>
                   <ContenedorMessage>
                     <Remitente>
-                      {obtenerIniciales(`${almunoInfo.nombre} ${almunoInfo.apellido}`)}
+                      {obtenerIniciales(alumnoInfo ? `${alumnoInfo.nombre} ${alumnoInfo.apellido}` : `${user.nombre} ${user.apellido}`)}
                     </Remitente>
                     <div style={{ marginLeft: '10px' }}>
                       <Fecha>{format(new Date(incidencia.fechahoracreacion), "HH:mm d MMM").toLowerCase()}</Fecha>
@@ -169,12 +179,16 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
                   {messages.map((respuesta) => (
                     <ContenedorMessage key={respuesta.id}>
                       <Remitente>
+                        {console.log(user)}
+                        {console.log(alumnoInfo)}
                         {obtenerIniciales(
-                          respuesta.remitente_tipo === 'alumno'
-                            ? `${almunoInfo.nombre} ${almunoInfo.apellido}`
-                            : respuesta.remitente_tipo === 'personal'
-                              ? `${user.nombre}`
-                              : ''
+                          respuesta.remitente_tipo === 'alumno' && !alumnoInfo
+                            ? `${user.nombre} ${user.apellido}`
+                            : respuesta.remitente_tipo === 'alumno' && alumnoInfo
+                              ? `${alumnoInfo.nombre} ${alumnoInfo.apellido}`
+                              :  respuesta.remitente_tipo === 'personal' && alumnoInfo
+                                ? `${user.nombre}`
+                                : destinatario.nombre
                         )}
                       </Remitente>
                       <div style={{ marginLeft: '10px' }}>
@@ -216,6 +230,7 @@ const Overlay = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 2;
 `;
 
 const ContenedorReplyIncident = styled.div`
@@ -242,7 +257,7 @@ const FotoEstudiante = styled.img`
   margin-left: 50px;
 `;
 
-export const BoldText = styled.span`
+const BoldText = styled.span`
   font-weight: bold;
 `;
 
@@ -261,7 +276,7 @@ const LabelInfo = styled.div`
     margin-bottom: 10px;
 `;
 
-const InfoEstudiante = styled.div`
+const Info = styled.div`
     font-family: "Bahnschrift", sans-serif;
     color: #1e98d7;
     margin-left: 20px;
@@ -297,7 +312,7 @@ const ContenidoReplyIncident = styled.div`
 `;
 
 const ContenedorInfoIncidencia = styled.div`
-    height:600px;
+    height:470px;
     width: 50%;
     left: 0;
 `;
@@ -375,7 +390,7 @@ const Button = styled.button`
 `;
 
 const ContenedorChat = styled.div`
-  height: 600px;
+  height: 470px;
   width: 50%;
   right: 0;
   border-radius: 7px;

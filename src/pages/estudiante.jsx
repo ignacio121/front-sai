@@ -27,35 +27,6 @@ function EstudiantePage() {
     }
   }, [token, navigate, dispatch]);
 
-  useEffect(() => {
-    if (categoriasPadre.length > 0 && categoriasPadre.length > 0) {
-      console.log('Categorías:', categoriasPadre);
-    }
-  }, [categoriasPadre]);
-
-  useEffect(() => {
-    if (destinatarios.length > 0) {
-      console.log('Destinatarios:', destinatarios);
-    }
-  }, [destinatarios]);
-
-  useEffect(() => {
-    if (user) {
-      console.log('Usuario:', user);
-      console.log('userId:', user.userId); // Acceder al userId desde user
-      console.log('carrera_id:', user.carrera_id); // Acceder a carrera_id desde user
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (preguntasFrecuentes) {
-      console.log('Preguntas Frecuentes:', preguntasFrecuentes);
-      // Aquí podrías manejar las preguntas frecuentes y mostrarlas en tu interfaz
-    }
-  }, [preguntasFrecuentes]);
-  const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
-  console.log("response",loginResponse)
-
   return (
     <div>
       {token ? (
