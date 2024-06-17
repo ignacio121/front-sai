@@ -6,12 +6,10 @@ export const DESTINATARIOS_SUCCESS = 'DESTINATARIOS_SUCCESS';
 export const DESTINATARIOS_FAILURE = 'DESTINATARIOS_FAILURE';
 
 export const getDestinatarios = () => async (dispatch, getState) => {
-    console.log('getDestinatarios action called');
     dispatch({ type: DESTINATARIOS_REQUEST });
 
     try {
         const token = getState().auth.token;
-        console.log('Token:', token);
 
         const response = await axios.get(`${URI}/personal`, {
             headers: {

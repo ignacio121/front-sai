@@ -14,7 +14,6 @@ export const login = (rut, contraseña) => async (dispatch) => {
     const { token, userId, userType, rol, carrera_id } = loginResponse;
 
     localStorage.setItem('loginResponse', JSON.stringify(loginResponse));
-
     let userResponse = null;
     if (userType === 'alumno') {
       const { data } = await axios.get(`${URI}/alumnos/${userId}`, {

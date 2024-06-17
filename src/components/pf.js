@@ -41,7 +41,7 @@ const FAQComponent = () => {
 
   const modalContentStyle = {
     backgroundColor: '#fff',
-    margin: '15% auto',
+    margin: '5% auto',
     padding: '20px',
     border: '1px solid #888',
     width: '80%',

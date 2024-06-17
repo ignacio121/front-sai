@@ -14,32 +14,34 @@ function Login() {
   const [Rut, setRut] = useState('');
   const [Password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-  const [authError, setAuthError] = useState({message:'', state:null});
+  const [authError, setAuthError] = useState({ message: '', state: null });
 
   const handleAuth = (e) => {
     e.preventDefault();
-    if ( !(/^\d{8}$/).test(Rut) ){
-      setAuthError({message: 'Por favor ingresa un rut valido', state:true});
+    if (!(/^\d{8}$/).test(Rut)) {
+      setAuthError({ message: 'Por favor ingresa un rut valido', state: true });
     } else {
       dispatch(login(Rut, Password));
     }
   };
 
   useEffect(() => {
-    if (error && error.message) {
-        setAuthError({message:error.message, state:true});
+    if (error && error.message && authError.message !== error.message) {
+      setAuthError({ message: error.message, state: true });
+    } else if (!error) {
+      setAuthError({ message: '', state: null });
     }
+  }, [error, authError.message]);
 
+  useEffect(() => {
     if (isAuthenticated) {
-      if (sesion && sesion.userType === "alumno"){
-          navigate('/estudiante');
+      if (sesion?.userType === 'alumno') {
+        navigate('/estudiante');
+      } else if (sesion?.userType === 'personal') {
+        navigate('/personal');
       }
-      else if (sesion && sesion.userType === "personal"){
-          navigate('/personal');
-      };
-  }
-  }, [isAuthenticated, sesion, navigate, error, setAuthError]);
+    }
+  }, [isAuthenticated, sesion, navigate]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -52,20 +54,19 @@ function Login() {
         <LoginText>INICIO DE SESIÓN</LoginText>
         <Form onSubmit={handleAuth}>
           <InputContainer>
-          {authError.state && <Error error={authError.state} style={{ color: 'red' }}  >{authError.message}</Error>}
-            <Input type='text' value={Rut} onChange={(e) => setRut(e.target.value)} placeholder='Rut' error={authError.state}/>
-            <Input type='password' value={Password} onChange={(e) => setPassword(e.target.value)} placeholder='Contraseña' error={authError.state}/>
+            {authError.state && <Error error={authError.state} style={{ color: 'red' }}>{authError.message}</Error>}
+            <Input type="text" value={Rut} onChange={(e) => setRut(e.target.value)} placeholder="Rut" error={authError.state} />
+            <Input type={showPassword ? 'text' : 'password'} value={Password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" error={authError.state} />
             <StyledButton type="button" onClick={togglePasswordVisibility}>
               <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
             </StyledButton>
           </InputContainer>
           <ButtonContainer>
-            <Button type='submit'>
+            <Button type="submit">
               {loading ? 'Cargando...' : 'INGRESA'}
             </Button>
           </ButtonContainer>
         </Form>
-        
       </ContenedorForm>
     </Contenedor>
   );
