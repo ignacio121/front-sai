@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
-function AgendaPage() {
+function AddIncidentPage() {
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
 
@@ -16,7 +16,7 @@ function AgendaPage() {
     <>
       {token ? (
         <>
-          <p>Proxima pagina para agendar citas</p>
+          <p>Proxima pagina que administradores agreguen incidencias</p>
         </>
       ) : (
         <p>Acceso denegado. Por favor, inicia sesión para acceder a esta página.</p>
@@ -25,4 +25,4 @@ function AgendaPage() {
   );
 }
 
-export default AgendaPage;
+export default AddIncidentPage;

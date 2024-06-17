@@ -480,6 +480,7 @@ const EstadoIncidenciaBox = styled.div`
   text-align: center;
   line-height: normal;
   margin-top: 10px;
+  margin-bottom: 10px;
   width: auto;
 `;
 
