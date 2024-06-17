@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import Button from 'react-bootstrap/Button';
 import swal from 'sweetalert';
+import Button from 'react-bootstrap/Button';
+
 import FAQComponent from './pf'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -33,7 +34,7 @@ const iconsCategorias = {
   7: MdDescription,
 };
 
-const Options = ({ categorias, destinatarios }) => {
+const Options = ({ categorias, categoriasHijo, destinatarios }) => {
   const [showModal, setShowModal] = useState(false);
   const [showModal4, setShowModal4] = useState(false);
   const [activeTab, setActiveTab] = useState(1);
@@ -43,6 +44,7 @@ const Options = ({ categorias, destinatarios }) => {
   const [selectedPriority, setSelectedPriority] = useState(null);
   const [selectedDestinatario, setSelectedDestinatario] = useState(null);
   const [descripcion, setDescripcion] = useState('');
+  const [filteredHijos, setFilteredHijos] = useState([]);
 
   const { sesion, user } = useSelector((state) => state.auth);
 
@@ -78,13 +80,23 @@ const TabContent = styled.div`
 
   const inputFileRef = useRef(null);
 
+  const openFileInput = () => {
+    inputFileRef.current.value = null; // Reiniciar el valor del input para permitir seleccionar el mismo archivo nuevamente
+    inputFileRef.current.click();
+  };
   const handleFileInputChange = (event) => {
     const files = Array.from(event.target.files);
     const filesWithPreview = files.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
     }));
-    setSelectedFiles(filesWithPreview);
+    setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, ...filesWithPreview]);
+  };
+  const handleFileDelete = (preview) => {
+    setSelectedFiles((prevSelectedFiles) =>
+      prevSelectedFiles.filter((fileObj) => fileObj.preview !== preview)
+    );
+    URL.revokeObjectURL(preview); // Liberar la URL de objeto
   };
   const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
   const handleSubmit = () => {
@@ -131,6 +143,10 @@ const TabContent = styled.div`
     if (selected !== id) {
       setSelected(id);
       setShowNextButton(true);
+      if (activeTab === 1) {
+        const hijos = categoriasHijo.filter(categoria => categoria.categoriapadre_id === id);
+        setFilteredHijos(hijos);
+      }
     }
   };
 
@@ -145,9 +161,7 @@ const TabContent = styled.div`
     setActiveTab(activeTab - 1);
   };
 
-  const openFileInput = () => {
-    inputFileRef.current.click();
-  };
+  
   const [mostrarFAQ, setMostrarFAQ] = useState(false);
 
   const handleMostrarFAQ = () => {
@@ -256,6 +270,21 @@ const TabContent = styled.div`
                 Baja
               </PriorityButton>
             </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+              <h2 style={{ color: '#007bff' }}>Especificanos más sobre que trata tu problemática</h2>
+              <div style={{  justifyContent: 'space-between', flexWrap: 'wrap', width: '100%' }}>
+                {filteredHijos.map((categoria) => (
+                  <PriorityButton
+                    key={categoria.id}
+                    selected={selected === categoria.id}
+                    onClick={() => handleCategoryClick(categoria.id)}
+                  >
+                    <p>{categoria.nombre}</p>
+                  </PriorityButton>
+                ))}
+              </div>
+            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Buttons1 onClick={handleBackButtonClick} style={{ marginRight: '10px', marginLeft: '30%' }}>
                 Retroceder
@@ -282,23 +311,24 @@ const TabContent = styled.div`
               onBlur={handleBlur}
             />
             <Label htmlFor="inputFile" onClick={openFileInput}>
-              Adjuntar archivos
-            </Label>
-            <InputFile
-              type="file"
-              id="inputFile"
-              ref={inputFileRef}
-              onChange={handleFileInputChange}
-              multiple
-            />
-            {selectedFiles.length > 0 && (
-              <FileList>
-                {selectedFiles.map((fileObj, index) => (
-                  <FileListItem key={index}>
-                    <a href={fileObj.preview} target="_blank" rel="noopener noreferrer">{fileObj.file.name}</a>
-                  </FileListItem>
-                ))}
-              </FileList>
+        Adjuntar archivos (No obligatorio)
+      </Label>
+      <InputFile
+        type="file"
+        id="inputFile"
+        ref={inputFileRef}
+        onChange={handleFileInputChange}
+        multiple
+      />
+      {selectedFiles.length > 0 && (
+        <FileList>
+          {selectedFiles.map((fileObj, index) => (
+            <FileListItem key={index}>
+              <a href={fileObj.preview} target="_blank" rel="noopener noreferrer">{fileObj.file.name}</a>
+              <Buttons1 style={{marginLeft:"2%"}} onClick={() => handleFileDelete(fileObj.preview)}>Eliminar</Buttons1>
+            </FileListItem>
+          ))}
+        </FileList>
             )}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
               <Buttons1 onClick={handleBackButtonClick} style={{ marginRight: '10px' }}>
@@ -319,7 +349,13 @@ const TabContent = styled.div`
   );
 };
 export default Options;
-
+const Select = styled.div`
+  border: 1px solid ${props => props.selected ? 'blue' : 'transparent'};
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+`;
 
   const FileList = styled.ul`
     list-style: none;
@@ -358,6 +394,13 @@ const Menu = styled.div`
   width: 100%;
 `;
 
+const PriorityButton1 = styled.div`
+  border: 1px solid ${props => props.selected ? '#007bff' : 'transparent'};
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+`;
 const PriorityButton = styled.button`
   background-color: ${(props) => (props.selected ? '#007bff' : 'white')};
   color: ${(props) => (props.selected ? 'white' : '#007bff')};

@@ -118,7 +118,6 @@ export const replyIncidencia = (incidencia_id, contenido, remitente_id, remitent
   dispatch({ type: INCIDENCIAS_REPLY_REQUEST });
   try {
       const token = getState().auth.token;
-      console.log( incidencia_id, contenido, remitente_id, remitente_tipo )
       await axios.post(`${URI}/api/incidencia/responder`, { incidencia_id, contenido, remitente_id, remitente_tipo },{
           headers: {
               Authorization: `Bearer ${token}`
@@ -150,7 +149,6 @@ export const confirmReplyIncidencia = (incidencia_id) => async (dispatch, getSta
       }
     });
 
-    console.log(response.data)
 
     dispatch({ type: INCIDENCIAS_CONFIRM_SUCCESS , payload: response.data });
   } catch (error) {
@@ -174,7 +172,6 @@ export const rejectIncidencia = (incidencia_id) => async (dispatch, getState) =>
       }
     });
 
-    console.log(response.data)
 
     dispatch({ type: INCIDENCIAS_CONFIRM_SUCCESS , payload: response.data });
   } catch (error) {
