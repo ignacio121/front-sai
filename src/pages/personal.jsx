@@ -5,6 +5,8 @@ import { logout } from '../Redux/actions/authActions';
 import NavBar from '../components/navbar';
 import IncidenciasPage from './personal/incidencias';
 import AgendaPage from './personal/agenda';
+import FAQPage from './personal/FAQ';
+import AddIncidentPage from './personal/AgregarInciencia';
 
 function PersonalPage() {
   const navigate = useNavigate();
@@ -35,6 +37,10 @@ function PersonalPage() {
         return <IncidenciasPage />;
       case 'agenda':
         return <AgendaPage />;
+      case 'agregarIncidencia':
+        return <AddIncidentPage />;
+      case 'preguntasFrecuentes':
+        return <FAQPage/>
       default:
         return <div>Seleccione una opción del menú</div>;
     }
