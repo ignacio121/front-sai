@@ -1,4 +1,4 @@
-import styled,{ css } from 'styled-components';
+import styled from 'styled-components';
 
 export const Contenedor = styled.div`
   margin: 0;
@@ -27,6 +27,7 @@ export const ContenedorForm = styled.div`
   flex-direction: column;
   height: 70%;
   width: 35vw;
+  min-width: 400px;
   background: #ffffff;
   box-shadow: 0 0 0 0.1rem;
   backdrop-filter: blur(8.5);
@@ -62,27 +63,34 @@ export const InputContainer = styled.div`
   margin-top: 10vh;
 `;
 
+export const Container = styled.div`
+  display: flex;
+  align-items: center;
+  width: 60%;
+  height: 10vh;
+  position: relative;
+  margin-bottom: 6vh;
+`;
+
 export const Input = styled.input`
-    background : rgba(255,255,255,0.15);
-    box-shadow: 0px 0px 8px 0px rgba(0, 0, 255, 0.59);
-    border-radius: 15px;
-    width: 60%;
-    height: 10vh;
-    padding: 1rem;
-    border: 2px solid ${props => (props.error === 'true' ? 'red' : '#1e98d7')};
-    outline: none;
-    color: ${props => (props.error === 'true' ? 'red' : '#1e98d7')};
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0px 0px 8px 0px rgba(0, 0, 255, 0.59);
+  border-radius: 15px;
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid ${props => (props.error ? 'red' : '#1e98d7')};
+  outline: none;
+  color: ${props => (props.error ? 'red' : '#1e98d7')};
+  font-family: "Bahnschrift Light", "Bahnschrift", sans-serif;
+  &:focus {
+    display: inline-block;
+    box-shadow: 0 0 0 0.1rem ${props => (props.error ? 'red' : '#1e98d7')};
+    backdrop-filter: blur(12);
+  }
+  &::placeholder {
+    color: ${props => (props.error ? 'red' : '#1e98d7')};
     font-family: "Bahnschrift Light", "Bahnschrift", sans-serif;
-    margin-bottom: 6vh;
-    &:focus{
-        display: inline-block;
-        box-shadow: 0 0 0 0.1rem ${props => (props.error === 'true' ? 'red' : '#1e98d7')};
-        backdrop-filter: blur(12);
-    }
-    &::placeholder{
-        color: ${props => (props.error === 'true' ? 'red' : '#1e98d7')};
-        font-family: "Bahnschrift Light", "Bahnschrift", sans-serif;
-    }
+  }
 `;
 
 export const ButtonContainer = styled.div`
@@ -114,25 +122,17 @@ export const Button = styled.button`
 `;
 
 export const Error = styled.h1`
-    position: absolute;
-    font-size: 12px;
-    color: 'red';
-    display: none;
-    margin-bottom: 30vh;
-    font-family: "Bahnschrift Bold", "Bahnschrift", sans-serif;
-    ${props => props.error === false && css`
-        display: none;
-    `}
-    ${props => props.error === true && css`
-        display: block;
-    `}
+  position: absolute;
+  font-size: 12px;
+  color: red;
+  margin-bottom: 30vh;
+  font-family: "Bahnschrift Bold", "Bahnschrift", sans-serif;
+  display: ${props => (props.error ? 'block' : 'none')};
 `;
 
 export const StyledButton = styled.button`
   position: absolute;
-  right: 25px; 
-  top: 70%;
-  transform: translateY(-50%);
+  right: 10px; 
   background: none;
   border: none;
   cursor: pointer;

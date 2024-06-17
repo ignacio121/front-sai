@@ -2,36 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { login } from '../Redux/actions/authActions';
-import { Contenedor, ContenedorForm, LoginText, Titulo, Form, InputContainer, Input, ButtonContainer, Button, Error, StyledButton } from '../style/login.style.js';
+import { Contenedor, ContenedorForm, LoginText, Titulo, Form, InputContainer, Input, ButtonContainer, Button, Error, StyledButton, Container } from '../style/login.style.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; 
 
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, isAuthenticated, error, sesion } = useSelector((state) => state.auth) || {};
+  const { loading, isAuthenticated, error, sesion } = useSelector((state) => state.auth);
 
   const [Rut, setRut] = useState('');
   const [Password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [authError, setAuthError] = useState({ message: '', state: null });
+  const [authError, setAuthError] = useState({ message: '', state: false });
 
   const handleAuth = (e) => {
     e.preventDefault();
     if (!(/^\d{8}$/).test(Rut)) {
-      setAuthError({ message: 'Por favor ingresa un rut valido', state: true });
+      setAuthError({ message: 'Por favor ingresa un rut válido', state: true });
     } else {
       dispatch(login(Rut, Password));
     }
   };
-
-  useEffect(() => {
-    if (error && error.message && authError.message !== error.message) {
-      setAuthError({ message: error.message, state: true });
-    } else if (!error) {
-      setAuthError({ message: '', state: null });
-    }
-  }, [error, authError.message]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -41,7 +33,12 @@ function Login() {
         navigate('/personal');
       }
     }
-  }, [isAuthenticated, sesion, navigate]);
+    if (error && error.message && authError.message !== error.message) {
+      setAuthError({ message: error.message, state: true });
+    } else if (!error) {
+      setAuthError({ message: '', state: false });
+    }
+  }, [isAuthenticated, sesion, navigate, error]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -54,12 +51,16 @@ function Login() {
         <LoginText>INICIO DE SESIÓN</LoginText>
         <Form onSubmit={handleAuth}>
           <InputContainer>
-            {authError.state && <Error error={authError.state} style={{ color: 'red' }}>{authError.message}</Error>}
-            <Input type="text" value={Rut} onChange={(e) => setRut(e.target.value)} placeholder="Rut" error={authError.state} />
-            <Input type={showPassword ? 'text' : 'password'} value={Password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" error={authError.state} />
-            <StyledButton type="button" onClick={togglePasswordVisibility}>
-              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-            </StyledButton>
+            {authError.state && <Error error={authError.state.toString()} style={{ color: 'red' }}>{authError.message}</Error>}
+            <Container>
+              <Input type="text" value={Rut} onChange={(e) => setRut(e.target.value)} placeholder="Rut" error={authError.state} />
+            </Container>
+            <Container>
+              <Input type={showPassword ? 'text' : 'password'} value={Password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" error={authError.state} />
+              <StyledButton type="button" onClick={togglePasswordVisibility}>
+                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+              </StyledButton>
+            </Container>
           </InputContainer>
           <ButtonContainer>
             <Button type="submit">

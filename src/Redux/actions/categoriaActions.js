@@ -27,9 +27,7 @@ export const getCategorias = () => async (dispatch, getState) => {
             });
             categoriasHijo.push(...categoriasHijoResponse.data);
         }
-        if (categoriasHijo){
-            console.log("categorias hijo", categoriasHijo)
-        }
+        
         dispatch({ type: CATEGORIAS_SUCCESS, payload: {categoriasHijo, categoriasPadre}});
     } catch (error) {
         dispatch({
