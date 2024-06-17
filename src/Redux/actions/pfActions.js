@@ -17,7 +17,6 @@ export const fetchPreguntasFrecuentes = () => async (dispatch, getState) => {
       }
     });
 
-    console.log('Preguntas Frecuentesss:', response.data);
     dispatch({
       type: PREGUNTAS_FRECUENTES_SUCCESS,
       payload: response.data

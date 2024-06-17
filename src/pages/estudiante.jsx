@@ -47,6 +47,7 @@ function EstudiantePage() {
               />
               <Options 
                 categorias={categoriasPadre}
+                categoriasHijo={categoriasHijo}
                 destinatarios={destinatarios} 
               />
               {loading ? (
