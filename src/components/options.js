@@ -19,6 +19,8 @@ import {
 import ProgressBar from './barProgress';
 import { useSelector, useDispatch } from 'react-redux';
 import { postIncidencia } from '../Redux/actions/incidenciasActions';
+import IncidenciasPage from '../pages/personal/incidencias';
+import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 // Iconos por categoría
 const iconsCategorias = {
@@ -33,6 +35,7 @@ const iconsCategorias = {
 
 const Options = ({ categorias, destinatarios }) => {
   const [showModal, setShowModal] = useState(false);
+  const [showModal4, setShowModal4] = useState(false);
   const [activeTab, setActiveTab] = useState(1);
   const [selected, setSelected] = useState(null);
   const [showNextButton, setShowNextButton] = useState(false);
@@ -40,6 +43,9 @@ const Options = ({ categorias, destinatarios }) => {
   const [selectedPriority, setSelectedPriority] = useState(null);
   const [selectedDestinatario, setSelectedDestinatario] = useState(null);
   const [descripcion, setDescripcion] = useState('');
+
+  const { sesion, user } = useSelector((state) => state.auth);
+
 
   const textareaRef = useRef(null);
 
@@ -57,6 +63,8 @@ const Options = ({ categorias, destinatarios }) => {
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
+  const openModalStateIncident = () => setShowModal4(true);
+  const closeModalStateIncident = () => setShowModal4(false);
   const ModalContent = styled.div`
   padding: 20px;
 `;
@@ -79,7 +87,6 @@ const TabContent = styled.div`
     setSelectedFiles(filesWithPreview);
   };
   const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
-  console.log("response",loginResponse.carrera_id)
   const handleSubmit = () => {
     const data = {
       alumno_id: loginResponse.userId,
@@ -170,7 +177,7 @@ const TabContent = styled.div`
           <Text>Foro estudiantil</Text>
         </Incidencia>
 
-        <Incidencia color="#00A1E4" onClick={() => handleButtonClick('estado_incidencias')}>
+        <Incidencia color="#00A1E4" onClick={() => openModalStateIncident()}>
           <MdTask size={26} color="white" style={{marginLeft:'3%'}} />
           <Text>Estado Incidencias</Text>
         </Incidencia>
@@ -304,6 +311,10 @@ const TabContent = styled.div`
           </ModalContent>
         </TabContent>
       </Modal>
+      <Modal show={showModal4} onClose={closeModalStateIncident} title="Estado de incidencias" styled={{width: '100px'}}>
+        <IncidenciasPage></IncidenciasPage>
+      </Modal>
+
     </div>
   );
 };
@@ -480,8 +491,6 @@ const Modal = ({ children, show, onClose, title }) => {
   );
 };
 
-
-
 const Overlay = styled.div`
   width: 100vw;
   height: 100vh;
@@ -496,21 +505,21 @@ const Overlay = styled.div`
 `;
 
 const ContenedorModal = styled.div`
-      width: 90%;
-      max-width: 700px;
-      height: auto;
-      max-height: 90%;
-      background: #fff;
-      position: relative;
-      border-radius: 5px;
-      box-shadow: rgba(141, 121, 121, 0.24) 0px 3px 8px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow: auto;
-      box-sizing: border-box;
-    `;
+  width: auto;
+  min-width: 50%;
+  height: auto;
+  max-height: 90%;
+  background: #fff;
+  position: relative;
+  border-radius: 5px;
+  box-shadow: rgba(141, 121, 121, 0.24) 0px 3px 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
+  box-sizing: border-box;
+`;
 
 
 

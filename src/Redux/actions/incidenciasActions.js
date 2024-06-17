@@ -18,26 +18,40 @@ export const INCIDENCIAS_CONFIRM_REQUEST = 'INCIDENCIAS_CONFIRM_REQUEST';
 export const INCIDENCIAS_CONFIRM_SUCCESS = 'INCIDENCIAS_CONFIRM_SUCCESS';
 export const INCIDENCIAS_CONFIRM_FAILURE = 'INCIDENCIAS_CONFIRM_FAILURE';
 
-export const getIncidenciasPersonal = (personal, token) => async (dispatch, getState) => {
+export const getIncidencias = (id, personal_type, token) => async (dispatch, getState) => {
   await dispatch(getCategorias());
-  
+
   dispatch({ type: INCIDENCIAS_REQUEST });
 
   try {
-    const {categoriasHijo, categoriasPadre} = getState().categorias;
+    const { categoriasHijo, categoriasPadre } = getState().categorias;
 
-    const { data: incidenciaPersonalResponse } = await axios.get(`${URI}/api/incidencia/porPersonal/${personal}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    let incidenciaResponse;
+
+    if (personal_type === 'personal') {
+      const { data } = await axios.get(`${URI}/api/incidencia/porPersonal/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      incidenciaResponse = data;
+    } else if (personal_type === 'alumno') {
+      const { data } = await axios.get(`${URI}/api/incidencia/porAlumno/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      incidenciaResponse = data;
+    } else {
+      throw new Error('Tipo de personal no válido');
+    }
 
     const getCategoriaNombre = (categoriaId) => {
       const categoria = categoriasHijo.find(cat => cat.id === categoriaId) || categoriasPadre.find(cat => cat.id === categoriaId);
       return categoria ? categoria.nombre : 'Desconocida';
     };
-    
-    const modifiedData = incidenciaPersonalResponse.map(incidencia => {
+
+    const modifiedData = incidenciaResponse.map(incidencia => {
       let estado = "Pendiente";
       if (incidencia.respuestaincidencia && incidencia.respuestaincidencia.length > 0) {
         estado = "Atendida";
@@ -104,7 +118,7 @@ export const replyIncidencia = (incidencia_id, contenido, remitente_id, remitent
   dispatch({ type: INCIDENCIAS_REPLY_REQUEST });
   try {
       const token = getState().auth.token;
-
+      console.log( incidencia_id, contenido, remitente_id, remitente_tipo )
       await axios.post(`${URI}/api/incidencia/responder`, { incidencia_id, contenido, remitente_id, remitente_tipo },{
           headers: {
               Authorization: `Bearer ${token}`
