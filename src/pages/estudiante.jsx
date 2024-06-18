@@ -15,7 +15,6 @@ function EstudiantePage() {
   const { user, token, loading, error } = useSelector((state) => state.auth);
   const { categoriasPadre, categoriasHijo } = useSelector((state) => state.categorias);
   const { destinatarios } = useSelector((state) => state.destinatarios);
-  const { preguntasFrecuentes } = useSelector((state) => state.preguntasFrecuentes);
 
   useEffect(() => {
     if (!token) {
