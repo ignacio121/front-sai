@@ -17,7 +17,7 @@ import {
   MdPerson,
 } from 'react-icons/md';
 import ProgressBar from './barProgress';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { postIncidencia } from '../Redux/actions/incidenciasActions';
 import IncidenciasPage from '../pages/personal/incidencias';
 

@@ -33,7 +33,7 @@ function Login() {
         navigate('/personal');
       }
     }
-    if (error && error.message && authError.message !== error.message) {
+    if (error && error.message) {
       setAuthError({ message: error.message, state: true });
     } else if (!error) {
       setAuthError({ message: '', state: false });
