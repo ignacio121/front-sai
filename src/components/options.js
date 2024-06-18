@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import swal from 'sweetalert';
-import Button from 'react-bootstrap/Button';
 
 import FAQComponent from './pf'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,7 +20,6 @@ import ProgressBar from './barProgress';
 import { useSelector, useDispatch } from 'react-redux';
 import { postIncidencia } from '../Redux/actions/incidenciasActions';
 import IncidenciasPage from '../pages/personal/incidencias';
-import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 // Iconos por categoría
 const iconsCategorias = {
@@ -45,9 +43,6 @@ const Options = ({ categorias, categoriasHijo, destinatarios }) => {
   const [selectedDestinatario, setSelectedDestinatario] = useState(null);
   const [descripcion, setDescripcion] = useState('');
   const [filteredHijos, setFilteredHijos] = useState([]);
-
-  const { sesion, user } = useSelector((state) => state.auth);
-
 
   const textareaRef = useRef(null);
 
@@ -128,8 +123,6 @@ const TabContent = styled.div`
         console.error('Error al enviar la incidencia:', error);
       });
   };
-
-  const handleTabClick = (tab) => setActiveTab(tab);
 
   const handleSelectDestinatario = (destinatario) => {
     setSelectedDestinatario(destinatario);
@@ -349,13 +342,6 @@ const TabContent = styled.div`
   );
 };
 export default Options;
-const Select = styled.div`
-  border: 1px solid ${props => props.selected ? 'blue' : 'transparent'};
-  border-radius: 4px;
-  padding: 10px;
-  margin: 5px;
-  cursor: pointer;
-`;
 
   const FileList = styled.ul`
     list-style: none;
@@ -394,13 +380,6 @@ const Menu = styled.div`
   width: 100%;
 `;
 
-const PriorityButton1 = styled.div`
-  border: 1px solid ${props => props.selected ? '#007bff' : 'transparent'};
-  border-radius: 4px;
-  padding: 10px;
-  margin: 5px;
-  cursor: pointer;
-`;
 const PriorityButton = styled.button`
   background-color: ${(props) => (props.selected ? '#007bff' : 'white')};
   color: ${(props) => (props.selected ? 'white' : '#007bff')};
@@ -469,20 +448,6 @@ const Buttons1 = styled.button`
   }
 `;
 
-const Buttons = styled.button`
-  background-color: ${(props) => (props.selected ? 'white' : '#007bff')};
-  color: ${(props) => (props.selected ? '#007bff' : 'white')};
-  border: ${(props) => (props.selected ? '2px solid black' : 'none')};
-  padding: 10px 20px;
-  margin: 5px;
-  cursor: pointer;
-  border-radius: 5px;
-
-  &:hover {
-    background-color: ${(props) => (props.selected ? '#0072C2' : '#0056b3')};
-    color: white;
-  }
-`;
 
 const Text = styled.p`
   margin-left: 20px;
