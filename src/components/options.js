@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import swal from 'sweetalert';
-import Button from 'react-bootstrap/Button';
 
 import FAQComponent from './pf'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,10 +17,9 @@ import {
   MdPerson,
 } from 'react-icons/md';
 import ProgressBar from './barProgress';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { postIncidencia } from '../Redux/actions/incidenciasActions';
 import IncidenciasPage from '../pages/personal/incidencias';
-import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 // Iconos por categoría
 const iconsCategorias = {
@@ -45,8 +43,7 @@ const Options = ({ categorias, categoriasHijo, destinatarios }) => {
   const [selectedDestinatario, setSelectedDestinatario] = useState(null);
   const [descripcion, setDescripcion] = useState('');
   const [filteredHijos, setFilteredHijos] = useState([]);
-
-  const { sesion, user } = useSelector((state) => state.auth);
+  const isSubmitEnabled = descripcion.trim() !== '';
 
 
   const textareaRef = useRef(null);
@@ -81,22 +78,24 @@ const TabContent = styled.div`
   const inputFileRef = useRef(null);
 
   const openFileInput = () => {
-    inputFileRef.current.value = null; // Reiniciar el valor del input para permitir seleccionar el mismo archivo nuevamente
-    inputFileRef.current.click();
+    if (inputFileRef.current) {
+      inputFileRef.current.click();
+    }
   };
   const handleFileInputChange = (event) => {
-    const files = Array.from(event.target.files);
-    const filesWithPreview = files.map((file) => ({
+    const files = Array.from(event.target.files).map(file => ({
       file,
-      preview: URL.createObjectURL(file),
+      preview: URL.createObjectURL(file)
     }));
-    setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, ...filesWithPreview]);
+    setSelectedFiles(files);
   };
+
   const handleFileDelete = (preview) => {
-    setSelectedFiles((prevSelectedFiles) =>
-      prevSelectedFiles.filter((fileObj) => fileObj.preview !== preview)
-    );
-    URL.revokeObjectURL(preview); // Liberar la URL de objeto
+    const updatedFiles = selectedFiles.filter(fileObj => fileObj.preview !== preview);
+    setSelectedFiles(updatedFiles);
+    if (updatedFiles.length === 0) {
+      inputFileRef.current.value = null; // Clear the input value
+    }
   };
   const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
   const handleSubmit = () => {
@@ -129,8 +128,6 @@ const TabContent = styled.div`
       });
   };
 
-  const handleTabClick = (tab) => setActiveTab(tab);
-
   const handleSelectDestinatario = (destinatario) => {
     setSelectedDestinatario(destinatario);
   };
@@ -149,6 +146,8 @@ const TabContent = styled.div`
       }
     }
   };
+  const isNextButtonEnabled = selectedDestinatario && selectedPriority && selected;
+
 
   const handleNextButtonClick = () => {
     setActiveTab(activeTab + 1);
@@ -160,6 +159,7 @@ const TabContent = styled.div`
   const handleBackButtonClick = () => {
     setActiveTab(activeTab - 1);
   };
+  const inputStyle = selectedFiles.length > 0 ? { display: 'none' } : {};
 
   
   const [mostrarFAQ, setMostrarFAQ] = useState(false);
@@ -289,9 +289,11 @@ const TabContent = styled.div`
               <Buttons1 onClick={handleBackButtonClick} style={{ marginRight: '10px', marginLeft: '30%' }}>
                 Retroceder
               </Buttons1>
-              <Buttons1 onClick={handleNextButtonClick} style={{ marginLeft: '5%' }}>
-                Siguiente
-              </Buttons1>
+              {isNextButtonEnabled && (
+                <Buttons1 onClick={handleNextButtonClick} style={{ marginLeft: '5%' }}>
+                  Siguiente
+                </Buttons1>
+              )}
             </div>
           </ModalContent>
         </TabContent>
@@ -310,26 +312,29 @@ const TabContent = styled.div`
               defaultValue={descripcion}
               onBlur={handleBlur}
             />
-            <Label htmlFor="inputFile" onClick={openFileInput}>
-        Adjuntar archivos (No obligatorio)
-      </Label>
-      <InputFile
-        type="file"
-        id="inputFile"
-        ref={inputFileRef}
-        onChange={handleFileInputChange}
-        multiple
-      />
-      {selectedFiles.length > 0 && (
-        <FileList>
-          {selectedFiles.map((fileObj, index) => (
-            <FileListItem key={index}>
-              <a href={fileObj.preview} target="_blank" rel="noopener noreferrer">{fileObj.file.name}</a>
-              <Buttons1 style={{marginLeft:"2%"}} onClick={() => handleFileDelete(fileObj.preview)}>Eliminar</Buttons1>
-            </FileListItem>
-          ))}
-        </FileList>
-            )}
+            {selectedFiles.length === 0 && (
+                <h2 style={{ color: '#007bff' }} onClick={openFileInput}>
+                  Adjuntar archivos (No obligatorio)
+                </h2>
+              )}
+              <input 
+                type="file"
+                id="inputFile"
+                ref={inputFileRef}
+                onChange={handleFileInputChange}
+                multiple
+                style={inputStyle} // Apply the conditional style
+              />
+              {selectedFiles.length > 0 && (
+                <FileList>
+                  {selectedFiles.map((fileObj, index) => (
+                    <FileListItem key={index}>
+                      <a href={fileObj.preview} target="_blank" rel="noopener noreferrer">{fileObj.file.name}</a>
+                      <Buttons1 style={{marginLeft:"2%"}} onClick={() => handleFileDelete(fileObj.preview)}>Eliminar</Buttons1>
+                    </FileListItem>
+                  ))}
+                </FileList>
+              )}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
               <Buttons1 onClick={handleBackButtonClick} style={{ marginRight: '10px' }}>
                 Retroceder
@@ -349,13 +354,6 @@ const TabContent = styled.div`
   );
 };
 export default Options;
-const Select = styled.div`
-  border: 1px solid ${props => props.selected ? 'blue' : 'transparent'};
-  border-radius: 4px;
-  padding: 10px;
-  margin: 5px;
-  cursor: pointer;
-`;
 
   const FileList = styled.ul`
     list-style: none;
@@ -394,13 +392,6 @@ const Menu = styled.div`
   width: 100%;
 `;
 
-const PriorityButton1 = styled.div`
-  border: 1px solid ${props => props.selected ? '#007bff' : 'transparent'};
-  border-radius: 4px;
-  padding: 10px;
-  margin: 5px;
-  cursor: pointer;
-`;
 const PriorityButton = styled.button`
   background-color: ${(props) => (props.selected ? '#007bff' : 'white')};
   color: ${(props) => (props.selected ? 'white' : '#007bff')};
@@ -469,20 +460,6 @@ const Buttons1 = styled.button`
   }
 `;
 
-const Buttons = styled.button`
-  background-color: ${(props) => (props.selected ? 'white' : '#007bff')};
-  color: ${(props) => (props.selected ? '#007bff' : 'white')};
-  border: ${(props) => (props.selected ? '2px solid black' : 'none')};
-  padding: 10px 20px;
-  margin: 5px;
-  cursor: pointer;
-  border-radius: 5px;
-
-  &:hover {
-    background-color: ${(props) => (props.selected ? '#0072C2' : '#0056b3')};
-    color: white;
-  }
-`;
 
 const Text = styled.p`
   margin-left: 20px;
