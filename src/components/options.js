@@ -43,8 +43,6 @@ const Options = ({ categorias, categoriasHijo, destinatarios }) => {
   const [selectedDestinatario, setSelectedDestinatario] = useState(null);
   const [descripcion, setDescripcion] = useState('');
   const [filteredHijos, setFilteredHijos] = useState([]);
-  const isSubmitEnabled = descripcion.trim() !== '';
-
 
   const textareaRef = useRef(null);
 

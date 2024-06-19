@@ -82,8 +82,10 @@ function NavBar({ children }) {
             <Button onClick={() => handleButtonClick('agregarIncidencia', 'incidencias')}>Agregar incidencia</Button>
           </Dropdown>
           <Button onClick={() => handleButtonClick('preguntasFrecuentes', 'preguntasFrecuentes')} isSelected={isSelected.preguntasFrecuentes}>Preguntas frecuentes</Button>
-          <Button onClick={() => handleButtonClick('GraficasMetricas', 'GraficasMetricas')} isSelected={isSelected.GraficasMetricas}>Gráficas y métricas</Button>
-          <Button onClick={() => handleButtonClick('personal', 'personal')} isSelected={isSelected.personal}>Personal</Button>
+          {/*
+            <Button onClick={() => handleButtonClick('GraficasMetricas', 'GraficasMetricas')} isSelected={isSelected.GraficasMetricas}>Gráficas y métricas</Button>
+            <Button onClick={() => handleButtonClick('personal', 'personal')} isSelected={isSelected.personal}>Personal</Button>
+          */}
           <Button onClick={handleLogout}>Cerrar sesión</Button>
         </SideNavBar>
         <Content>
