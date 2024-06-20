@@ -76,22 +76,24 @@ const TabContent = styled.div`
   const inputFileRef = useRef(null);
 
   const openFileInput = () => {
-    inputFileRef.current.value = null; // Reiniciar el valor del input para permitir seleccionar el mismo archivo nuevamente
-    inputFileRef.current.click();
+    if (inputFileRef.current) {
+      inputFileRef.current.click();
+    }
   };
   const handleFileInputChange = (event) => {
-    const files = Array.from(event.target.files);
-    const filesWithPreview = files.map((file) => ({
+    const files = Array.from(event.target.files).map(file => ({
       file,
-      preview: URL.createObjectURL(file),
+      preview: URL.createObjectURL(file)
     }));
-    setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, ...filesWithPreview]);
+    setSelectedFiles(files);
   };
+
   const handleFileDelete = (preview) => {
-    setSelectedFiles((prevSelectedFiles) =>
-      prevSelectedFiles.filter((fileObj) => fileObj.preview !== preview)
-    );
-    URL.revokeObjectURL(preview); // Liberar la URL de objeto
+    const updatedFiles = selectedFiles.filter(fileObj => fileObj.preview !== preview);
+    setSelectedFiles(updatedFiles);
+    if (updatedFiles.length === 0) {
+      inputFileRef.current.value = null; // Clear the input value
+    }
   };
   const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
   const handleSubmit = () => {
@@ -142,6 +144,8 @@ const TabContent = styled.div`
       }
     }
   };
+  const isNextButtonEnabled = selectedDestinatario && selectedPriority && selected;
+
 
   const handleNextButtonClick = () => {
     setActiveTab(activeTab + 1);
@@ -153,6 +157,7 @@ const TabContent = styled.div`
   const handleBackButtonClick = () => {
     setActiveTab(activeTab - 1);
   };
+  const inputStyle = selectedFiles.length > 0 ? { display: 'none' } : {};
 
   
   const [mostrarFAQ, setMostrarFAQ] = useState(false);
@@ -282,9 +287,11 @@ const TabContent = styled.div`
               <Buttons1 onClick={handleBackButtonClick} style={{ marginRight: '10px', marginLeft: '30%' }}>
                 Retroceder
               </Buttons1>
-              <Buttons1 onClick={handleNextButtonClick} style={{ marginLeft: '5%' }}>
-                Siguiente
-              </Buttons1>
+              {isNextButtonEnabled && (
+                <Buttons1 onClick={handleNextButtonClick} style={{ marginLeft: '5%' }}>
+                  Siguiente
+                </Buttons1>
+              )}
             </div>
           </ModalContent>
         </TabContent>
@@ -303,26 +310,29 @@ const TabContent = styled.div`
               defaultValue={descripcion}
               onBlur={handleBlur}
             />
-            <Label htmlFor="inputFile" onClick={openFileInput}>
-        Adjuntar archivos (No obligatorio)
-      </Label>
-      <InputFile
-        type="file"
-        id="inputFile"
-        ref={inputFileRef}
-        onChange={handleFileInputChange}
-        multiple
-      />
-      {selectedFiles.length > 0 && (
-        <FileList>
-          {selectedFiles.map((fileObj, index) => (
-            <FileListItem key={index}>
-              <a href={fileObj.preview} target="_blank" rel="noopener noreferrer">{fileObj.file.name}</a>
-              <Buttons1 style={{marginLeft:"2%"}} onClick={() => handleFileDelete(fileObj.preview)}>Eliminar</Buttons1>
-            </FileListItem>
-          ))}
-        </FileList>
-            )}
+            {selectedFiles.length === 0 && (
+                <h2 style={{ color: '#007bff' }} onClick={openFileInput}>
+                  Adjuntar archivos (No obligatorio)
+                </h2>
+              )}
+              <input 
+                type="file"
+                id="inputFile"
+                ref={inputFileRef}
+                onChange={handleFileInputChange}
+                multiple
+                style={inputStyle} // Apply the conditional style
+              />
+              {selectedFiles.length > 0 && (
+                <FileList>
+                  {selectedFiles.map((fileObj, index) => (
+                    <FileListItem key={index}>
+                      <a href={fileObj.preview} target="_blank" rel="noopener noreferrer">{fileObj.file.name}</a>
+                      <Buttons1 style={{marginLeft:"2%"}} onClick={() => handleFileDelete(fileObj.preview)}>Eliminar</Buttons1>
+                    </FileListItem>
+                  ))}
+                </FileList>
+              )}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
               <Buttons1 onClick={handleBackButtonClick} style={{ marginRight: '10px' }}>
                 Retroceder
