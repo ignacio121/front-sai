@@ -13,6 +13,7 @@ import {
   const initialState = {
     loading: false,
     incidencias: null,
+    reuniones: null,
     error: null,
   };
   
@@ -28,7 +29,8 @@ import {
         return {
           ...state,
           loading: false,
-          incidencias: action.payload,
+          incidencias: action.payload.Data,
+          reuniones: action.payload.reuniones,
           error: null
         };
       case INCIDENCIAS_FAILURE:

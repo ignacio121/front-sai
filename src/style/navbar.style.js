@@ -48,14 +48,14 @@ export const Button = styled.button`
       box-sizing: border-box;
       box-shadow: 0px 0px 0px 0px rgba(0, 0, 255, 0.59),
         inset 0px 0px 4px 0px rgba(255, 255, 255, 0.35);
-      background-color: #1b78a6;
+      background-color: #2886b5;
     `}
 
   &:hover {
     box-sizing: border-box;
     box-shadow: 0px 0px 0px 0px rgba(0, 0, 255, 0.59),
       inset 0px 0px 4px 0px rgba(255, 255, 255, 0.35);
-    background-color: #1b78a6;
+    background-color: #2886b5;
   }
 `;
 
@@ -88,7 +88,7 @@ export const Dropdown = styled.div`
   animation: ${props => (props.visible ? expand : collapse)} 0.3s ease-out;
   padding-left: 10px;
   transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
-  background-color: #1b78a6;
+  background-color: #2886b5;
 `;
 
 export const Content = styled.div`

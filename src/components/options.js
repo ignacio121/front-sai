@@ -528,9 +528,6 @@ const ContenedorModal = styled.div`
   overflow: auto;
   box-sizing: border-box;
 `;
-
-
-
     
 const EncabezadoModal = styled.div`
   display: flex;

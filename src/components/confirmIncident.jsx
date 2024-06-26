@@ -33,7 +33,7 @@ function ConfirmIncident({ state, changeState, type, id, onConfirmation }) {
 
             <ButtonContainer>
             
-              <Button reject onClick={() =>  changeState(false)}>Rechazar</Button>
+              <Button reject onClick={() =>  changeState(false)}>Cancelar</Button>
               <Button accept onClick={() => { changeState(false); type ? handleAccept() : handleReject() }}>Aceptar</Button>
             </ButtonContainer>
           </ContenedorConfirmIncident>

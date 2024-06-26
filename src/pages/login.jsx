@@ -5,6 +5,7 @@ import { login } from '../Redux/actions/authActions';
 import { Contenedor, ContenedorForm, LoginText, Titulo, Form, InputContainer, Input, ButtonContainer, Button, Error, StyledButton, Container } from '../style/login.style.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; 
+import { getIncidencias } from '../Redux/actions/incidenciasActions.js';
 
 function Login() {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ function Login() {
         navigate('/estudiante');
       } else if (sesion?.userType === 'personal') {
         navigate('/personal');
+        dispatch(getIncidencias(sesion.userId, sesion.userType));
       }
     }
     if (error && error.message) {
@@ -38,7 +40,7 @@ function Login() {
     } else if (!error) {
       setAuthError({ message: '', state: false });
     }
-  }, [isAuthenticated, sesion, navigate, error]);
+  }, [isAuthenticated, sesion, navigate, dispatch, error]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

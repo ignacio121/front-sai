@@ -1,15 +1,22 @@
 import axios from 'axios';
 import { URI } from '../config';
+import { isTokenExpired } from './errorActions';
+import { logout } from './authActions';
 
 export const ESTUDIANTES_REQUEST = 'ESTUDIANTES_REQUEST';
 export const ESTUDIANTES_SUCCESS = 'ESTUDIANTES_SUCCESS';
 export const ESTUDIANTES_ID_SUCCESS = 'ESTUDIANTES_ID_SUCCESS';
 export const ESTUDIANTES_FAILURE = 'ESTUDIANTES_FAILURE';
 
-export const getEstudiantesId = (id) => async (dispatch, getState) => {
+export const getEstudiantesId = (id) => async (dispatch) => {
+    if (isTokenExpired()) {
+        dispatch(logout());
+        return;
+    }
+    
     dispatch({ type: ESTUDIANTES_REQUEST });
     try {
-        const token = getState().auth.token;
+        const token = localStorage.getItem('token');
 
         const response = await axios.get(`${URI}/alumnos/${id}`, {
             headers: {

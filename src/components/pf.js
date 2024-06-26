@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchPreguntasFrecuentes } from '../Redux/actions/pfActions';
 import { FaSearch } from 'react-icons/fa'; // Importar el ícono de búsqueda
+import styled from 'styled-components';
 
 const FAQComponent = () => {
   const dispatch = useDispatch();
@@ -27,83 +28,8 @@ const FAQComponent = () => {
     setModalOpen(false);
   };
 
-  const modalStyle = {
-    display: modalOpen ? 'block' : 'none',
-    position: 'fixed',
-    zIndex: 1,
-    left: 0,
-    top: 0,
-    width: '100%',
-    height: '100%',
-    overflow: 'auto',
-    backgroundColor: 'rgba(0,0,0,0.4)',
-  };
-
-  const modalContentStyle = {
-    backgroundColor: '#fff',
-    margin: '5% auto',
-    padding: '20px',
-    border: '1px solid #888',
-    width: '80%',
-    maxWidth: '600px',
-  };
-
-  const closeModalStyle = {
-    color: '#aaaaaa',
-    float: 'right',
-    fontSize: '28px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-  };
-
-  const searchContainerStyle = {
-    marginBottom: '10px',
-    display: 'flex',
-    alignItems: 'center',
-  };
-
-  const titleStyle = {
-    color: '#007bff',
-    marginBottom: '20px',
-  };
-
-  const searchInputStyle = {
-    padding: '8px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    marginRight: '10px',
-    flex: '1',
-  };
-
-  const searchIconStyle = {
-    fontSize: '20px',
-    cursor: 'pointer',
-    color: '#555',
-  };
-
-  const paginationContainerStyle = {
-    marginTop: '10px',
-    display: 'flex',
-    justifyContent: 'center',
-  };
-
-  const paginationButtonStyle = {
-    padding: '8px 16px',
-    margin: '0 4px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    backgroundColor: '#f0f0f0',
-    cursor: 'pointer',
-  };
-
-  const activePaginationButtonStyle = {
-    ...paginationButtonStyle,
-    backgroundColor: '#007bff',
-    color: '#fff',
-  };
-
   const handleSearch = () => {
-    setCurrentPage(1); 
+    setCurrentPage(1);
   };
 
   const filteredPreguntas = preguntasFrecuentes.data
@@ -128,24 +54,21 @@ const FAQComponent = () => {
 
   return (
     <div>
-      <div style={modalStyle}>
-        <div style={modalContentStyle}>
-          <span style={closeModalStyle} onClick={closeModal}>
-            &times;
-          </span>
-          <div style={titleStyle}>
+      <Modal isOpen={modalOpen}>
+        <ModalContent>
+          <CloseModal onClick={closeModal}>&times;</CloseModal>
+          <Title>
             <h2>Preguntas Frecuentes</h2>
-          </div>
-          <div style={searchContainerStyle}>
-            <input
+          </Title>
+          <SearchContainer>
+            <SearchInput
               type="text"
               placeholder="Buscar..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              style={searchInputStyle}
             />
-            <FaSearch style={searchIconStyle} onClick={handleSearch} />
-          </div>
+            <SearchIcon onClick={handleSearch} />
+          </SearchContainer>
           <ul>
             {currentItems.length > 0 ? (
               currentItems.map((pregunta, index) => (
@@ -159,24 +82,95 @@ const FAQComponent = () => {
             )}
           </ul>
           {filteredPreguntas.length > itemsPerPage && (
-            <div style={paginationContainerStyle}>
+            <PaginationContainer>
               {[...Array(Math.ceil(filteredPreguntas.length / itemsPerPage)).keys()].map(
                 pageNumber => (
-                  <button
+                  <PaginationButton
                     key={pageNumber}
-                    style={pageNumber + 1 === currentPage ? activePaginationButtonStyle : paginationButtonStyle}
+                    active={pageNumber + 1 === currentPage}
                     onClick={() => paginate(pageNumber + 1)}
                   >
                     {pageNumber + 1}
-                  </button>
+                  </PaginationButton>
                 )
               )}
-            </div>
+            </PaginationContainer>
           )}
-        </div>
-      </div>
+        </ModalContent>
+      </Modal>
     </div>
   );
 };
 
 export default FAQComponent;
+
+
+const Modal = styled.div`
+  display: ${props => (props.isOpen ? 'block' : 'none')};
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+`;
+
+const ModalContent = styled.div`
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+`;
+
+const CloseModal = styled.span`
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+`;
+
+const SearchContainer = styled.div`
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+`;
+
+const Title = styled.div`
+  color: #007bff;
+  margin-bottom: 20px;
+`;
+
+const SearchInput = styled.input`
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  flex: 1;
+`;
+
+const SearchIcon = styled(FaSearch)`
+  font-size: 20px;
+  cursor: pointer;
+  color: #555;
+`;
+
+const PaginationContainer = styled.div`
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+`;
+
+const PaginationButton = styled.button`
+  padding: 8px 16px;
+  margin: 0 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: ${props => (props.active ? '#007bff' : '#f0f0f0')};
+  color: ${props => (props.active ? '#fff' : '#000')};
+  cursor: pointer;
+`;

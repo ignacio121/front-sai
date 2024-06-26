@@ -3,17 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { format } from 'date-fns';
 import { getIncidencias } from '../../Redux/actions/incidenciasActions';
-import { Categoria, Estado, Fecha, IncidenciasContainer, IncidenciasMainContainer, MensajeView, Prioridad, Separador, UltimoMensaje } from '../../style/incidencia.style';
+import { Categoria, Estado, Fecha, HeaderItem, IncidenciasContainer, IncidenciasHeader, IncidenciasMainContainer, MensajeView, Prioridad, Separador, UltimoMensaje } from '../../style/incidencia.style';
 import ReplyIncident from '../../components/replyIncident';
 import LoaderComponent from '../../components/loader';
 import Pagination from '../../components/pagination';
-
 
 function IncidenciasPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { sesion, token } = useSelector((state) => state.auth);
-  const { incidencias, loading } = useSelector((state) => state.incidencias);
+  const { incidencias, loading, error } = useSelector((state) => state.incidencias);
 
   const [stateReplyIncident, changeReplyIncident] = useState({ activo: false, incidencia: null });
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,9 +20,7 @@ function IncidenciasPage() {
   const [currentIncidencias, setCurrentIncidencias] = useState([]);
 
   const ultimaRespuesta = (incidencia) => {
-
     const respuestas = incidencia.respuestaincidencia;
-
     if (respuestas.length === 0 && sesion.userType === 'alumno') {
       return false;
     }
@@ -39,19 +36,20 @@ function IncidenciasPage() {
   };
 
   useEffect(() => {
-    if (!token) {
+    if (!token || error) {
       navigate('/');
-    } else {
-      dispatch(getIncidencias(sesion.userId, sesion.userType, token));
+    } 
+    if (!incidencias && !loading){
+      dispatch(getIncidencias(sesion.userId, sesion.userType));
     }
     if (incidencias && sesion.userType === 'personal'){
       const indexOfLastIncidencia = currentPage * incidenciasPerPage;
       const indexOfFirstIncidencia = indexOfLastIncidencia - incidenciasPerPage;
-      setCurrentIncidencias(incidencias.slice(indexOfFirstIncidencia, indexOfLastIncidencia))
+      setCurrentIncidencias(incidencias.slice(indexOfFirstIncidencia, indexOfLastIncidencia));
     } else if (incidencias && sesion.userType === 'alumno'){
-      setCurrentIncidencias(incidencias)
+      setCurrentIncidencias(incidencias);
     }
-  }, [token, navigate, dispatch, sesion, currentPage, incidencias, incidenciasPerPage]);
+  }, [token, navigate, dispatch, sesion, currentPage, incidencias, incidenciasPerPage, loading, error]);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -60,6 +58,15 @@ function IncidenciasPage() {
       {loading || currentIncidencias.length > 0 ? (
         <>
           <IncidenciasMainContainer>
+            {/* Encabezado */}
+            <IncidenciasHeader>
+              <HeaderItem style={{minWidth: '50px', maxWidth:'50px'}}>Estado</HeaderItem>
+              <HeaderItem style={{minWidth: '70px'}}>Prioridad</HeaderItem>
+              <HeaderItem style={{ marginLeft: '3vw' }}>Categoria</HeaderItem>
+              <HeaderItem style={{ marginLeft: '6vw' }}>Descripción</HeaderItem>
+              <HeaderItem style={{ marginLeft: '30vw' }}>Fecha</HeaderItem>
+            </IncidenciasHeader>
+
             {currentIncidencias.map(incidencia => (
               <IncidenciasContainer key={incidencia.id} onClick={() => OpenReplyIncident(incidencia)}>
                 <Estado estado={incidencia.estado} />

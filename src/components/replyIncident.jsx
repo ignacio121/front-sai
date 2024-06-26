@@ -6,7 +6,11 @@ import { FaPaperPlane } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { replyIncidencia } from '../Redux/actions/incidenciasActions';
-import ConfirmIncident from './confirmIncident';
+import ConfirmIncident from './confirmIncident'
+import moment from 'moment';
+import { IoIosAdd } from "react-icons/io";
+import AddReunion from './addReunion';
+import InfoReunion from './infoReunion';
 
 const ReplyIncident = ({ state, changeState, incidencia }) => {
   const navigate = useNavigate();
@@ -17,6 +21,8 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState(incidencia.respuestaincidencia);
   const [stateOpenConfirm,changeOpenConfirm] = useState({activo: false, type: null});
+  const [stateAddReunion, changeAddReunion] = useState({ activo: false, incidenciaId: null });
+  const [stateInfoReunion, changeInfoReunion] = useState({ activo: false, reunion: null, origen: null });
   const [EstadoIncidencia, setEstadoIncidencia] = useState(incidencia.estado);
   const alumnoInfo = incidencia.alumno;
 
@@ -30,6 +36,11 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
     setMessage(e.target.value);
     adjustTextareaHeight(e);
   };
+
+  const closeAddReunion = () => {
+    changeAddReunion({ activo: false, incidenciaId: null });
+  };
+
 
   const handleSendClick = () => {
     if (message.trim() === '') {
@@ -45,12 +56,11 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
         fecharespuesta: new Date().toISOString(),
         remitente_tipo: sesion.userType
       };
-      console.log(newMessage)
-      console.log(sesion)
+
       dispatch(replyIncidencia(incidencia.id, message, sesion.userId, sesion.userType));
+
       setMessages([...messages, newMessage]);
       setMessage('');
-      console.log(alumnoInfo)
       if (alumnoInfo){
         setEstadoIncidencia('Atendida')
       }
@@ -85,6 +95,14 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
     changeOpenConfirm({ activo: false, type: null });
   };
 
+  const handleIndoReuSelect = (reu) => {
+    if (incidencia.alumno && alumnoInfo.id){
+      changeInfoReunion({ activo: true, reunion: reu, origen: false });
+    } else {
+      changeInfoReunion({ activo: true, reunion: reu, origen: true });
+    }
+  };
+
   useEffect(() => {
     if (!user) {
       navigate('/');
@@ -92,6 +110,7 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
       dispatch(getEstudiantesId(alumnoInfo.id));
     }
   }, [incidencia, alumnoInfo, dispatch, user, navigate]);
+
   return (
     <>
       {state &&
@@ -149,7 +168,7 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
                 <br/>
                 <Info>
                   <BoldText>Archivos:</BoldText>
-                  <ArchivoBox>
+                  <Box>
                     {incidencia.archivos && incidencia.archivos.length > 0 ? (
                       incidencia.archivos.map((archivo) => (
                         <ArchivoItem key={archivo.id}>
@@ -161,9 +180,30 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
                     ) : (
                       <SinArchivos>Sin archivos</SinArchivos>
                     )}
-                  </ArchivoBox>
+                  </Box>
                 </Info>
                 <br/>
+                <Info>
+                  <Header>
+                    <BoldText>Reuniones agendadas</BoldText>
+                    {alumnoInfo &&
+                    <AgregarReunion onClick={() => changeAddReunion({ activo: true, incidenciaId: incidencia.id })}>
+                      Agendar reunion <IoIosAdd size={'25px'}/>
+                    </AgregarReunion>
+                    }
+                  </Header>
+                  <Box>
+                    {incidencia.reunion && incidencia.reunion.length > 0 ? (
+                      incidencia.reunion.map((reu) => (
+                        <ArchivoItem key={reu.id} onClick={() => handleIndoReuSelect(reu)}>
+                          <div>{moment(`${reu.fecha} ${reu.hora}`).format('dddd, D [de] MMMM [de] YYYY HH:mm')}</div>
+                        </ArchivoItem>
+                      ))
+                    ) : (
+                      <SinArchivos>Sin reuniones</SinArchivos>
+                    )}
+                  </Box>
+                </Info>
                 { !(EstadoIncidencia !== 'Pendiente' && EstadoIncidencia !== 'Atendida') && alumnoInfo &&
                   <ButtonContainer>
                     <Button reject onClick={() => openConfirm(false)}>Rechazar</Button>
@@ -203,7 +243,7 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
                   ))}
                   {(EstadoIncidencia === 'Aceptada' || EstadoIncidencia === 'Rechazada') && 
                     <EstadoIncidenciaBox estado={EstadoIncidencia}>
-                      {EstadoIncidencia === 'Aceptada' ? 'La incidencia ha sido aceptada' : 'La incidencia ha sido rechazada'}
+                      {EstadoIncidencia === 'Aceptada' ? 'La incidencia ha sido resuelta' : 'La incidencia ha sido rechazada'}
                     </EstadoIncidenciaBox>
                   }
                 </ChatMessages>
@@ -219,9 +259,17 @@ const ReplyIncident = ({ state, changeState, incidencia }) => {
               </ContenedorChat>
             </ContenidoReplyIncident>
           </ContenedorReplyIncident>
-        </Overlay>
+          {stateAddReunion.activo && 
+              <AddReunion 
+                  state={stateAddReunion.activo} 
+                  changeState={closeAddReunion} 
+                  incidenciaId={stateAddReunion.incidenciaId} 
+              />
+          }
+          
+          </Overlay>
       }
-
+      {stateInfoReunion.activo && <InfoReunion state={stateInfoReunion.activo} changeState={changeInfoReunion} reunion={stateInfoReunion.reunion} origen={true}/>}
       <ConfirmIncident state={stateOpenConfirm.activo} changeState={changeOpenConfirm} type={stateOpenConfirm.type} id={incidencia.id} onConfirmation={handleConfirmation}/>
     </>
   );
@@ -286,10 +334,16 @@ const LabelInfo = styled.div`
 `;
 
 const Info = styled.div`
-    font-family: "Bahnschrift", sans-serif;
-    color: #1e98d7;
-    margin-left: 20px;
-    font-size: 20px;
+  font-family: "Bahnschrift", sans-serif;
+  color: #1e98d7;
+  margin-left: 20px;
+  font-size: 15px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 `;
 
 const BotonCerrar = styled.div`
@@ -330,9 +384,10 @@ const TitleInfo = styled.h2`
   font-family: "Bahnschrift", sans-serif;
   color: #1e98d7;
   text-align: center;
+  margin-top: 0%;
 `;
 
-const ArchivoBox = styled.div`
+const Box = styled.div`
   border-radius: 7px;
   border: 1px solid #1e98d7;
   background-color: #ffffff;
@@ -362,6 +417,21 @@ const ArchivoItem = styled.div`
 const SinArchivos = styled.div`
   color: #888;
   text-align: center;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const AgregarReunion = styled.div`
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #00ff00;
+  cursor: pointer;
+  padding: 3px 10px;
+  border-radius: 5px;
+  margin-left: 5px;
 `;
 
 const ButtonContainer = styled.div`

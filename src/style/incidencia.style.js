@@ -16,7 +16,6 @@ const getColor = (estado) => {
 };
 
 export const IncidenciasMainContainer = styled.div`
-    margin-top: 30px;
     height: 85%;
     width: 95%;
     position: relative;
@@ -24,6 +23,29 @@ export const IncidenciasMainContainer = styled.div`
     flex-direction: column;
     margin-bottom: 30px;
 `;
+
+// Encabezado para las incidencias
+export const IncidenciasHeader = styled.div`
+  display: flex;
+  width: 100%;
+  height: 40px;
+  margin-bottom: 6px;
+  background-color: #ffffff;
+`;
+
+export const HeaderItem = styled.div`
+  flex: 1;
+  text-align: left;
+  font-family: "Bahnschrift", sans-serif;
+  color: #1e98d7;
+  font-size: 18px;
+  line-height: 40px;
+  padding: 0 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 95px; /* Ajusta el ancho mínimo según sea necesario */
+`;
+
 
 export const IncidenciasContainer = styled.div`
   display: flex;
@@ -119,4 +141,3 @@ export const Separador = styled.div`
     box-sizing: border-box;
     box-shadow: 0px 0px 11px 0px #afafaf;
 `;
-
