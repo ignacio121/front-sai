@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { URI } from '../config';
 import { getCategorias } from './categoriaActions';
+import { handleError, isTokenExpired } from './errorActions';
+import { useNavigate } from 'react-router-dom';
+import { logout } from './authActions';
 
 export const INCIDENCIAS_REQUEST = 'INCIDENCIAS_REQUEST';
 export const INCIDENCIAS_SUCCESS = 'INCIDENCIAS_SUCCESS';
@@ -18,14 +21,22 @@ export const INCIDENCIAS_CONFIRM_REQUEST = 'INCIDENCIAS_CONFIRM_REQUEST';
 export const INCIDENCIAS_CONFIRM_SUCCESS = 'INCIDENCIAS_CONFIRM_SUCCESS';
 export const INCIDENCIAS_CONFIRM_FAILURE = 'INCIDENCIAS_CONFIRM_FAILURE';
 
-export const getIncidencias = (id, personal_type, token) => async (dispatch, getState) => {
+export const REUNION_POST = 'REUNION_POST';
+export const REUNION_SUCCESS = 'REUNION_SUCCESS';
+export const REUNION_FAILURE = 'REUNION_FAILURE';
+
+export const getIncidencias = (id, personal_type, navigate) => async (dispatch, getState) => {
+  if (isTokenExpired()) {
+    dispatch(logout());
+    return;
+  }
+
   await dispatch(getCategorias());
-
   dispatch({ type: INCIDENCIAS_REQUEST });
-
+  
   try {
     const { categoriasHijo, categoriasPadre } = getState().categorias;
-
+    const token = localStorage.getItem('token');
     let incidenciaResponse;
 
     if (personal_type === 'personal') {
@@ -51,6 +62,8 @@ export const getIncidencias = (id, personal_type, token) => async (dispatch, get
       return categoria ? categoria.nombre : 'Desconocida';
     };
 
+    let reuniones = [];
+
     const modifiedData = incidenciaResponse.map(incidencia => {
       let estado = "Pendiente";
 
@@ -68,6 +81,8 @@ export const getIncidencias = (id, personal_type, token) => async (dispatch, get
         estado = "Aceptada";
       }
 
+      reuniones = [...reuniones, ...incidencia.reunion];
+
       return {
         ...incidencia,
         estado: estado,
@@ -75,22 +90,50 @@ export const getIncidencias = (id, personal_type, token) => async (dispatch, get
       };
     });
 
-    dispatch({ type: INCIDENCIAS_SUCCESS, payload: modifiedData });
+    const estadoPrioridad = {
+      "Pendiente": 1,
+      "Atendida": 2,
+      "Aceptada": 3,
+      "Rechazada": 4
+    };
+
+    const prioridadValor = {
+      "Alta": 1,
+      "Media": 2,
+      "Baja": 3
+    };
+
+    const Data = modifiedData.sort((a, b) => {
+      // Primero, ordenar por estado
+      if (estadoPrioridad[a.estado] !== estadoPrioridad[b.estado]) {
+        return estadoPrioridad[a.estado] - estadoPrioridad[b.estado];
+      }
+      // Luego, ordenar por prioridad
+      if (prioridadValor[a.prioridad] !== prioridadValor[b.prioridad]) {
+        return prioridadValor[a.prioridad] - prioridadValor[b.prioridad];
+      }
+      // Finalmente, ordenar por fecha de creación
+      return new Date(a.fechahoracreacion) - new Date(b.fechahoracreacion);
+    });
+    console.log(Data)
+    dispatch({ type: INCIDENCIAS_SUCCESS, payload: { Data, reuniones } });
 
   } catch (error) {
-    dispatch({
-      type: INCIDENCIAS_FAILURE,
-      error: error.response ? error.response.data : { message: error.message }
-    });
+    dispatch(handleError(INCIDENCIAS_FAILURE, error, useNavigate()));
   }
 };
 
 
-export const postIncidencia = (incidenciaData) => async (dispatch, getState) => {
+export const postIncidencia = (incidenciaData) => async (dispatch) => {
+  if (isTokenExpired()) {
+    dispatch(logout());
+    return;
+  }
+
   dispatch({ type: POST_INCIDENCIA_REQUEST });
 
   try {
-    const token = getState().auth.token;
+    const token = localStorage.getItem('token');
     const formData = new FormData();
 
     for (const key in incidenciaData) {
@@ -112,17 +155,19 @@ export const postIncidencia = (incidenciaData) => async (dispatch, getState) => 
 
     dispatch({ type: POST_INCIDENCIA_SUCCESS, payload: response.data });
   } catch (error) {
-    dispatch({
-      type: POST_INCIDENCIA_FAILURE,
-      error: error.response ? error.response.data : { message: error.message }
-    });
+    dispatch(handleError(INCIDENCIAS_FAILURE, error, useNavigate()));
   }
 };
 
-export const replyIncidencia = (incidencia_id, contenido, remitente_id, remitente_tipo) => async (dispatch, getState) => {
+export const replyIncidencia = (incidencia_id, contenido, remitente_id, remitente_tipo) => async (dispatch) => {
+  if (isTokenExpired()) {
+    dispatch(logout());
+    return;
+  }
+  
   dispatch({ type: INCIDENCIAS_REPLY_REQUEST });
   try {
-      const token = getState().auth.token;
+      const token = localStorage.getItem('token');
       await axios.post(`${URI}/api/incidencia/responder`, { incidencia_id, contenido, remitente_id, remitente_tipo },{
           headers: {
               Authorization: `Bearer ${token}`
@@ -133,19 +178,19 @@ export const replyIncidencia = (incidencia_id, contenido, remitente_id, remitent
       
   } catch (error) {
       console.error('Error respondiendo mensajes:', error);
-      dispatch({
-          type: INCIDENCIAS_REPLY_FAILURE,
-          error: error.response ? error.response.data : {
-              message: error.message
-          }
-      });
+      dispatch(handleError(INCIDENCIAS_REPLY_FAILURE, error, useNavigate()));
   }
 };
 
-export const confirmReplyIncidencia = (incidencia_id) => async (dispatch, getState) => {
+export const confirmReplyIncidencia = (incidencia_id) => async (dispatch) => {
+  if (isTokenExpired()) {
+    dispatch(logout());
+    return;
+  }
+
   dispatch({ type: INCIDENCIAS_CONFIRM_REQUEST });
   try {
-    const token = getState().auth.token;
+    const token = localStorage.getItem('token');
 
 
     const response = await axios.put(`${URI}/api/incidencia/reabrir/${incidencia_id}`, null, {
@@ -158,18 +203,19 @@ export const confirmReplyIncidencia = (incidencia_id) => async (dispatch, getSta
     dispatch({ type: INCIDENCIAS_CONFIRM_SUCCESS , payload: response.data });
   } catch (error) {
     console.error('Error al confirmar respuesta de la incidencia:', error);
-    dispatch({
-      type: INCIDENCIAS_CONFIRM_FAILURE,
-      error: error.response ? error.response.data : { message: error.message }
-    });
+    dispatch(handleError(INCIDENCIAS_CONFIRM_FAILURE, error, useNavigate()));
   }
 };
 
-export const rejectIncidencia = (incidencia_id) => async (dispatch, getState) => {
+export const rejectIncidencia = (incidencia_id) => async (dispatch) => {
+  if (isTokenExpired()) {
+    dispatch(logout());
+    return;
+  }
+
   dispatch({ type: INCIDENCIAS_CONFIRM_REQUEST });
   try {
-    const token = getState().auth.token;
-
+    const token = localStorage.getItem('token');
 
     const response = await axios.put(`${URI}/api/incidencia/cerrar/${incidencia_id}`, null, {
       headers: {
@@ -177,13 +223,33 @@ export const rejectIncidencia = (incidencia_id) => async (dispatch, getState) =>
       }
     });
 
-
     dispatch({ type: INCIDENCIAS_CONFIRM_SUCCESS , payload: response.data });
   } catch (error) {
     console.error('Error al rechazar respuesta de la incidencia:', error);
-    dispatch({
-      type: INCIDENCIAS_CONFIRM_FAILURE,
-      error: error.response ? error.response.data : { message: error.message }
+    dispatch(handleError(INCIDENCIAS_CONFIRM_FAILURE, error, useNavigate()));
+  }
+};
+
+export const addReunion = (incidencia_id, tema, lugar, hora, fecha) => async (dispatch) => {
+  if (isTokenExpired()) {
+    dispatch(logout());
+    return;
+  }
+
+  dispatch({ type: REUNION_POST });
+  try {
+    const token = localStorage.getItem('token');
+
+    console.log(incidencia_id, tema, lugar, hora, fecha);
+    const response = await axios.post(`${URI}/api/reunion/programar`, { incidencia_id, tema, lugar, hora, fecha }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
+
+    dispatch({ type: REUNION_SUCCESS, payload: response.data });
+  } catch (error) {
+    console.error('Error al agregar una reunion:', error);
+    dispatch(handleError(REUNION_FAILURE, error, useNavigate()));
   }
 };

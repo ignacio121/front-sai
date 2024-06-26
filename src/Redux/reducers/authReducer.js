@@ -10,7 +10,7 @@ const initialState = {
   isAuthenticated: !!localStorage.getItem('token'),
   sesion: JSON.parse(localStorage.getItem('sesion')) || null,
   user: JSON.parse(localStorage.getItem('user')) || null,
-  token: null, 
+  token: !!localStorage.getItem('token') || null, 
   error: null,
 };
 
