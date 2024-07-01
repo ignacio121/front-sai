@@ -24,7 +24,7 @@ function Login() {
     } else {
       dispatch(login(Rut, Password));
     }
-  };
+  }; 
 
   useEffect(() => {
     if (isAuthenticated) {
