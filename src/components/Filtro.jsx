@@ -1,7 +1,6 @@
-// Filtro.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes, css } from 'styled-components';
-import { TbFilter, TbFilterCheck } from "react-icons/tb";
+import { TbFilter } from "react-icons/tb";
 import Switch from './Switch';
 import Checkbox from './CheckBox'; // Asumiendo que tienes un componente Checkbox separado
 import MultiSelect from './MultiSelect';
@@ -13,7 +12,6 @@ const Filtro = ({ incidencias, setFiltIncidencias }) => {
   const [filteredCategoriasHijo, setFilteredCategoriasHijo] = useState([]);
   const [selectedCategoriasHijo, setSelectedCategoriasHijo] = useState([]);
 
-
   const handlePadreSelectionChange = (selectedItems) => {
     setSelectedCategoriasPadre(selectedItems);
   };
@@ -21,14 +19,6 @@ const Filtro = ({ incidencias, setFiltIncidencias }) => {
   const handleHijoSelectionChange = (selectedItems) => {
     setSelectedCategoriasHijo(selectedItems);
   };
-
-  useEffect(() => {
-    // Filtrar las subcategorías basadas en las categorías padre seleccionadas
-    const filteredHijos = categoriasHijo.filter(hijo =>
-      selectedCategoriasPadre.some(padre => padre.id === hijo.categoriapadre_id)
-    );
-    setFilteredCategoriasHijo(filteredHijos);
-  }, [selectedCategoriasPadre, categoriasHijo]);
 
   const [isCheckedBoxEstado, setIsCheckedBoxEstado] = useState({
     SinAtender: false,
@@ -59,13 +49,6 @@ const Filtro = ({ incidencias, setFiltIncidencias }) => {
     Fecha: false,
     Busqueda: false,
   });
-
-  useEffect(() => {
-    // Realizar el filtrado de incidencias cuando cambian los filtros
-    if (incidencias){
-      handleFilterChange();
-    }
-  }, [isCheckedBoxEstado, isCheckedBoxPrioridad, isSelected, selectedCategoriasPadre, selectedCategoriasHijo]);
 
   const toggleDropdown = id => {
     setDropdowns(prevState => ({
@@ -103,8 +86,7 @@ const Filtro = ({ incidencias, setFiltIncidencias }) => {
     }));
   };
 
-  const handleFilterChange = () => {
-  
+  const handleFilterChange = useCallback(() => {
     const filteredIncidencias = incidencias.filter(incidencia => {
       let estadoMatch = true;
       let prioridadMatch = true;
@@ -145,7 +127,22 @@ const Filtro = ({ incidencias, setFiltIncidencias }) => {
     });
   
     setFiltIncidencias(filteredIncidencias)
-  };
+  }, [isCheckedBoxEstado, isCheckedBoxPrioridad, selectedCategoriasHijo, incidencias, setFiltIncidencias]);
+
+  useEffect(() => {
+    // Filtrar las subcategorías basadas en las categorías padre seleccionadas
+    const filteredHijos = categoriasHijo.filter(hijo =>
+      selectedCategoriasPadre.some(padre => padre.id === hijo.categoriapadre_id)
+    );
+    setFilteredCategoriasHijo(filteredHijos);
+  }, [selectedCategoriasPadre, categoriasHijo]);
+
+  useEffect(() => {
+    // Realizar el filtrado de incidencias cuando cambian los filtros
+    if (incidencias){
+      handleFilterChange();
+    }
+  }, [handleFilterChange, incidencias]);
 
   return (
     <FiltroBox>
@@ -219,8 +216,6 @@ const Filtro = ({ incidencias, setFiltIncidencias }) => {
 
 export default Filtro;
 
-
-// Styles
 const FiltroBox = styled.div`
   position: absolute;
   top: -40px;
