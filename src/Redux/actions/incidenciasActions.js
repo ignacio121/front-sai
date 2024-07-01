@@ -25,7 +25,7 @@ export const REUNION_POST = 'REUNION_POST';
 export const REUNION_SUCCESS = 'REUNION_SUCCESS';
 export const REUNION_FAILURE = 'REUNION_FAILURE';
 
-export const getIncidencias = (id, personal_type, navigate) => async (dispatch, getState) => {
+export const getIncidencias = (id, personal_type) => async (dispatch, getState) => {
   if (isTokenExpired()) {
     dispatch(logout());
     return;
@@ -115,7 +115,6 @@ export const getIncidencias = (id, personal_type, navigate) => async (dispatch, 
       // Finalmente, ordenar por fecha de creación
       return new Date(a.fechahoracreacion) - new Date(b.fechahoracreacion);
     });
-    console.log(Data)
     dispatch({ type: INCIDENCIAS_SUCCESS, payload: { Data, reuniones } });
 
   } catch (error) {
