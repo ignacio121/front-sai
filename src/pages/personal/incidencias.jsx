@@ -1,12 +1,26 @@
+// IncidenciasPage.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { format } from 'date-fns';
 import { getIncidencias } from '../../Redux/actions/incidenciasActions';
-import { Categoria, Estado, Fecha, HeaderItem, IncidenciasContainer, IncidenciasHeader, IncidenciasMainContainer, MensajeView, Prioridad, Separador, UltimoMensaje } from '../../style/incidencia.style';
+import {
+  Categoria,
+  Estado,
+  Fecha,
+  EstadoHeader,
+  IncidenciasContainer,
+  IncidenciasHeader,
+  IncidenciasMainContainer,
+  MensajeView,
+  Prioridad,
+  Separador,
+  UltimoMensaje,
+} from '../../style/incidencia.style';
 import ReplyIncident from '../../components/replyIncident';
 import LoaderComponent from '../../components/loader';
 import Pagination from '../../components/pagination';
+import Filtro from '../../components/Filtro';
 
 function IncidenciasPage() {
   const navigate = useNavigate();
@@ -18,6 +32,7 @@ function IncidenciasPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [incidenciasPerPage] = useState(7); // Número de incidencias por página
   const [currentIncidencias, setCurrentIncidencias] = useState([]);
+  const [filtIncidencias, setFiltIncidencias] = useState([]);
 
   const ultimaRespuesta = (incidencia) => {
     const respuestas = incidencia.respuestaincidencia;
@@ -45,11 +60,17 @@ function IncidenciasPage() {
     if (incidencias && sesion.userType === 'personal'){
       const indexOfLastIncidencia = currentPage * incidenciasPerPage;
       const indexOfFirstIncidencia = indexOfLastIncidencia - incidenciasPerPage;
-      setCurrentIncidencias(incidencias.slice(indexOfFirstIncidencia, indexOfLastIncidencia));
+  
+      // Aplicar filtros si existen
+      if (filtIncidencias.length > 0){
+        setCurrentIncidencias(filtIncidencias.slice(indexOfFirstIncidencia, indexOfLastIncidencia));
+      } else {
+        setCurrentIncidencias(incidencias.slice(indexOfFirstIncidencia, indexOfLastIncidencia));
+      }
     } else if (incidencias && sesion.userType === 'alumno'){
       setCurrentIncidencias(incidencias);
     }
-  }, [token, navigate, dispatch, sesion, currentPage, incidencias, incidenciasPerPage, loading, error]);
+  }, [token, navigate, dispatch, sesion, currentPage, incidencias, incidenciasPerPage, loading, error, filtIncidencias]);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -58,15 +79,17 @@ function IncidenciasPage() {
       {loading || currentIncidencias.length > 0 ? (
         <>
           <IncidenciasMainContainer>
-            {/* Encabezado */}
+            {incidencias && sesion.userType === 'personal' &&
+             <Filtro incidencias={incidencias} setFiltIncidencias={setFiltIncidencias} />
+            }
             <IncidenciasHeader>
-              <HeaderItem style={{minWidth: '50px', maxWidth:'50px'}}>Estado</HeaderItem>
-              <HeaderItem style={{minWidth: '70px'}}>Prioridad</HeaderItem>
-              <HeaderItem style={{ marginLeft: '3vw' }}>Categoria</HeaderItem>
-              <HeaderItem style={{ marginLeft: '6vw' }}>Descripción</HeaderItem>
-              <HeaderItem style={{ marginLeft: '30vw' }}>Fecha</HeaderItem>
+              <EstadoHeader>Estado</EstadoHeader> 
+              <Prioridad> Prioridad </Prioridad>
+              <Categoria> Categoria </Categoria>
+              <UltimoMensaje> Descripcion </UltimoMensaje>
+              <Fecha>Fecha</Fecha>
             </IncidenciasHeader>
-
+            
             {currentIncidencias.map(incidencia => (
               <IncidenciasContainer key={incidencia.id} onClick={() => OpenReplyIncident(incidencia)}>
                 <Estado estado={incidencia.estado} />
@@ -82,14 +105,13 @@ function IncidenciasPage() {
             ))}
             
             {incidencias && sesion.userType === 'personal' && 
-            <Pagination
-              incidenciasPerPage={incidenciasPerPage}
-              totalIncidencias={incidencias.length}
-              paginate={paginate}
-              currentPage={currentPage}
-            />
+              <Pagination
+                incidenciasPerPage={incidenciasPerPage}
+                totalIncidencias={filtIncidencias.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
             }
-            
           </IncidenciasMainContainer>
           {stateReplyIncident.incidencia && <ReplyIncident state={stateReplyIncident.activo} changeState={changeReplyIncident} incidencia={stateReplyIncident.incidencia} />}
         </>

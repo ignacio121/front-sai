@@ -93,9 +93,8 @@ export const Dropdown = styled.div`
 
 export const Content = styled.div`
   padding: 20px;
-  padding-top: 85px;
   overflow: auto;
-  top: 0;
+  top: 0; 
   bottom: 0;
   background-color: rgba(255, 255, 255, 1);
   height: calc(100vh - 105px);
@@ -115,4 +114,5 @@ export const ContentWrapper = styled.div`
   display: flex;
   flex: 1;
   margin-left: 250px;
+  margin-top: 65px;
 `;

@@ -2,7 +2,7 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const LoaderComponent = () => {
-  return <Loader className="loader-1"></Loader>;
+  return <Loader></Loader>;
 };
 
 export default LoaderComponent;

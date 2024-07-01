@@ -3,39 +3,61 @@ import styled from 'styled-components';
 const getColor = (estado) => {
   switch (estado) {
     case 'Pendiente':
-      return '#afafaf'; // color para pendiente
+      return '#afafaf';
     case 'Atendida':
-      return '#fff321'; // color para atendida
+      return '#fff321';
     case 'Rechazada':
-      return '#ff1515'; // color para rechazada
+      return '#ff1515';
     case 'Aceptada':
-      return '#4cff38'; // color para aceptada
+      return '#4cff38';
     default:
-      return '#afafaf'; // color por defecto
+      return '#afafaf';
   }
 };
 
 export const IncidenciasMainContainer = styled.div`
-    height: 85%;
-    width: 95%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 30px;
+  height: 85%;
+  width: 95%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+  }
 `;
 
-// Encabezado para las incidencias
 export const IncidenciasHeader = styled.div`
   display: flex;
   width: 100%;
   height: 40px;
   margin-bottom: 6px;
-  background-color: #ffffff;
+  box-sizing: border-box;
+  justify-content: space-between;
+`;
+
+export const EstadoHeader = styled.div`
+  height: 70px;
+  width: 4vw;
+  font-family: "Bahnschrift", sans-serif;
+  color: #1e98d7;
+  text-align: center;
+  font-size: 18px;
+  line-height: 30px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 10px;
+    border-radius: 10px 10px 0 0;
+  }
 `;
 
 export const HeaderItem = styled.div`
   flex: 1;
-  text-align: left;
+  text-align: center;
   font-family: "Bahnschrift", sans-serif;
   color: #1e98d7;
   font-size: 18px;
@@ -43,9 +65,13 @@ export const HeaderItem = styled.div`
   padding: 0 8px;
   overflow: hidden;
   white-space: nowrap;
-  min-width: 95px; /* Ajusta el ancho mínimo según sea necesario */
-`;
+  min-width: 95px;
 
+  @media (max-width: 768px) {
+    font-size: 14px;
+    padding: 0 4px;
+  }
+`;
 
 export const IncidenciasContainer = styled.div`
   display: flex;
@@ -54,10 +80,15 @@ export const IncidenciasContainer = styled.div`
   height: 70px;
   margin-bottom: 6px;
   border-radius: 10px;
-  background-color: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 8px 0px #afafaf;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
 `;
 
 export const Estado = styled.div`
@@ -67,10 +98,16 @@ export const Estado = styled.div`
   background-color: ${({ estado }) => getColor(estado)};
   box-sizing: border-box;
   box-shadow: 3px 0px 6px 0px ${({ estado }) => getColor(estado)};
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 10px;
+    border-radius: 10px 10px 0 0;
+  }
 `;
 
 export const Prioridad = styled.div`
-  width: 61px;
+  width: 100px;
   height: 30px;
   background-color: rgba(255, 255, 255, 0);
   font-family: "Bahnschrift", sans-serif;
@@ -78,12 +115,16 @@ export const Prioridad = styled.div`
   text-align: center;
   font-size: 18px;
   line-height: 30px;
-  margin-left: 2vw;
-  margin-right: 2vw;
+  margin: 0 2vw;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    margin: 5px 0;
+  }
 `;
 
 export const Categoria = styled.div`
-  width: 30vh;
+  flex: 2;
   height: 30px;
   background-color: rgba(255, 255, 255, 0);
   font-family: "Bahnschrift", sans-serif;
@@ -94,10 +135,15 @@ export const Categoria = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    margin: 5px 0;
+  }
 `;
 
 export const UltimoMensaje = styled.div`
-  width: 30vw;
+  flex: 3;
   height: 30px;
   background-color: rgba(255, 255, 255, 0);
   box-sizing: border-box;
@@ -107,24 +153,33 @@ export const UltimoMensaje = styled.div`
   text-align: left;
   font-size: 15px;
   line-height: 30px;
-  margin-left: 2vw;
-  margin-right: 2vw;
+  margin: 0 2vw;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    margin: 5px 0;
+  }
 `;
 
 export const MensajeView = styled.div`
-    width: 13px;
-    height: 13px;
-    background-color: ${({ ultimaRespuesta }) => ultimaRespuesta ? '#1e98d7' : 'transparent'};
-    box-sizing: border-box;
-    border-radius: 50%;
-    margin-right: 1vw;
+  width: 13px;
+  height: 13px;
+  background-color: ${({ ultimaRespuesta }) => ultimaRespuesta ? '#1e98d7' : 'transparent'};
+  box-sizing: border-box;
+  border-radius: 50%;
+  margin-right: 1vw;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 10px;
+  }
 `;
 
 export const Fecha = styled.div`
-  width: 20vh;
+  flex: 1;
   height: 30px;
   background-color: rgba(255, 255, 255, 0);
   font-family: "Bahnschrift Light", "Bahnschrift", sans-serif;
@@ -132,12 +187,22 @@ export const Fecha = styled.div`
   text-align: center;
   font-size: 15px;
   line-height: 30px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    margin: 5px 0;
+  }
 `;
 
 export const Separador = styled.div`
-    width: .1%;
-    height: 50px;
-    background-color: rgba(30, 152, 215, 0.43);
-    box-sizing: border-box;
-    box-shadow: 0px 0px 11px 0px #afafaf;
+  width: 1px;
+  height: 50px;
+  background-color: rgba(30, 152, 215, 0.43);
+  box-sizing: border-box;
+  box-shadow: 0px 0px 11px 0px #afafaf;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 1px;
+  }
 `;
