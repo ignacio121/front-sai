@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { fetchPreguntasFrecuentes } from '../../Redux/actions/pfActions';
+import { deletePreguntaFrecuente, fetchPreguntasFrecuentes } from '../../Redux/actions/pfActions';
+import ConfigPF from '../../components/configPf';
+import { RxPencil2, RxTrash } from "react-icons/rx";
+import AddEditFAQ from '../../components/addFAQ';
+import Pagination from '../../components/pagination';
 
 function FAQPage() {
   const navigate = useNavigate();
@@ -10,6 +14,11 @@ function FAQPage() {
   const token = useSelector((state) => state.auth.token);
   const { data: preguntasFrecuentes } = useSelector((state) => state.preguntasFrecuentes);
   const [activeIndex, setActiveIndex] = useState(null);
+  const [activeIconType, setActiveIconType] = useState(null);
+  const [stateAddEdit, changeStateAddEdit] = useState({ activo: false, FAQ: null });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [FAQPerPage] = useState(9);
+  const [currentFAQ, setCurrentFAQ] = useState([]);
 
   useEffect(() => {
     if (!token) {
@@ -23,24 +32,74 @@ function FAQPage() {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
+  const handleAddClick = () => {
+    setActiveIconType('add');
+    changeStateAddEdit({ activo: true, FAQ: null });
+  };
+
+  const handleEditClick = () => {
+    setActiveIconType('edit');
+  };
+
+  const handleDeleteClick = () => {
+    setActiveIconType('delete');
+  };
+
+  const handleIconClick = (FAQ, action) => {
+
+    console.log('FAQ ID:', FAQ, action);
+    if (action === 'edit'){
+      changeStateAddEdit({ activo: true, FAQ: FAQ });
+    }
+    if (action === 'delete'){
+      dispatch(deletePreguntaFrecuente(FAQ.id));
+    }
+  };
+
+  useEffect(() => {
+    const indexOfLastFAQ = currentPage * FAQPerPage;
+    const indexOfFirstFAQ = indexOfLastFAQ - FAQPerPage;
+    setCurrentFAQ(preguntasFrecuentes.slice(indexOfFirstFAQ, indexOfLastFAQ));
+  }, [currentPage, preguntasFrecuentes, FAQPerPage]);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <>
       {token ? (
         <>
+          <ConfigPF onAddClick={handleAddClick} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
           <FAQContainer>
-            {preguntasFrecuentes.map((faq, index) => (
-              <FAQItem key={index}>
+            {currentFAQ.map((faq, index) => (
+              <FAQItem key={faq.id}>
                 <QuestionButton onClick={() => toggleDropdown(index)}>
                   {faq.pregunta}
+                  {activeIconType === 'edit' && (
+                    <EditIcon onClick={() => handleIconClick(faq, activeIconType)}>
+                      <RxPencil2 />
+                    </EditIcon>
+                  )}
+                  {activeIconType === 'delete' && (
+                    <DeleteIcon onClick={() => handleIconClick(faq, activeIconType)}>
+                      <RxTrash />
+                    </DeleteIcon>
+                  )}
                 </QuestionButton>
                 <AnswerContainer isActive={activeIndex === index}>
-                  <AnswerContent>
-                    {faq.respuesta}
-                  </AnswerContent>
+                  <AnswerContent>{faq.respuesta}</AnswerContent>
                 </AnswerContainer>
               </FAQItem>
             ))}
+            <Pagination
+            incidenciasPerPage={FAQPerPage}
+            totalIncidencias={preguntasFrecuentes.length}
+            paginate={paginate}
+            currentPage={currentPage}
+          />
           </FAQContainer>
+          
+    
+          <AddEditFAQ state={stateAddEdit.activo} changeState={changeStateAddEdit} FAQ={stateAddEdit.FAQ}/>
         </>
       ) : (
         <DeniedMessage>Acceso denegado. Por favor, inicia sesión para acceder a esta página.</DeniedMessage>
@@ -73,12 +132,31 @@ const QuestionButton = styled.button`
   border: none;
   text-align: left;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   &:hover {
     background-color: #f1f1f1;
   }
   font-family: "Bahnschrift", sans-serif;
   color: #1e98d7;
   font-size: 17px;
+`;
+
+const EditIcon = styled.div`
+  display: flex;
+  color: #afafaf;
+  font-size: 20px;
+  cursor: pointer;
+  margin-left: 10px;
+`;
+
+const DeleteIcon = styled.div`
+  display: flex;
+  color: #ff1515;
+  font-size: 20px;
+  cursor: pointer;
+  margin-left: 10px;
 `;
 
 const AnswerContainer = styled.div`

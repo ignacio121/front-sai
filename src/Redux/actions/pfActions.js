@@ -16,22 +16,44 @@ export const fetchPreguntasFrecuentes = () => async (dispatch) => {
     dispatch(logout());
     return;
   }
-  
+
   dispatch({ type: PREGUNTAS_FRECUENTES_REQUEST });
 
   try {
     const token = localStorage.getItem('token');
+    let categoria = 1;
+    let responses = [];
 
-    const response = await axios.get(`${URI}/api/faq`, {
-      headers: {
-        Authorization: `Bearer ${token}`
+    // Iterar hasta que no se reciba respuesta del servidor
+    while (true) {
+      try {
+        const response = await axios.get(`${URI}/api/faq/categoria/${categoria}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (response.data.length === 0) {
+          break; // Si la respuesta está vacía, salir del bucle
+        }
+
+        responses = responses.concat(response.data); // Concatenar las respuestas al array principal
+        categoria++; // Incrementar la categoría para la siguiente petición
+
+      } catch (error) {
+        console.error(`Error fetching preguntas frecuentes para categoría ${categoria}:`, error);
+        // Manejar errores específicos si es necesario
+        break; // Salir del bucle en caso de error
       }
-    });
-    console.log(response.data);
+    }
+  console.log(responses)
     dispatch({
       type: PREGUNTAS_FRECUENTES_SUCCESS,
-      payload: response.data
+      payload: responses
     });
+
+  
+
   } catch (error) {
     console.error('Error fetching preguntas frecuentes:', error);
     dispatch(handleError(PREGUNTAS_FRECUENTES_FAILURE, error, useNavigate()));
@@ -39,7 +61,7 @@ export const fetchPreguntasFrecuentes = () => async (dispatch) => {
 };
 
 // Acción para crear una nueva pregunta frecuente
-export const createPreguntaFrecuente = (nuevaPregunta) => async (dispatch) => {
+export const createPreguntaFrecuente = ( pregunta, respuesta, categoriafaq_id ) => async (dispatch) => {
   if (isTokenExpired()) {
     dispatch(logout());
     return;
@@ -50,7 +72,7 @@ export const createPreguntaFrecuente = (nuevaPregunta) => async (dispatch) => {
   try {
     const token = localStorage.getItem('token');;
 
-    const response = await axios.post(`${URI}/api/faq`, nuevaPregunta, {
+    const response = await axios.post(`${URI}/api/faq`, { categoriafaq_id, pregunta, respuesta }, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -69,7 +91,7 @@ export const createPreguntaFrecuente = (nuevaPregunta) => async (dispatch) => {
 };
 
 // Acción para actualizar una pregunta frecuente
-export const updatePreguntaFrecuente = (id, preguntaActualizada) => async (dispatch) => {
+export const updatePreguntaFrecuente = (id, pregunta, respuesta, categoriafaq_id) => async (dispatch) => {
   if (isTokenExpired()) {
     dispatch(logout());
     return;
@@ -80,10 +102,9 @@ export const updatePreguntaFrecuente = (id, preguntaActualizada) => async (dispa
   try {
     const token = localStorage.getItem('token');
 
-    const response = await axios.put(`${URI}/api/faq/${id}`, preguntaActualizada, {
+    const response = await axios.put(`${URI}/api/faq/${id}`, { categoriafaq_id, pregunta, respuesta }, {
       headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${token}`
       }
     });
     console.log(response.data);
