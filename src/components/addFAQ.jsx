@@ -47,7 +47,7 @@ const AddEditFAQ = ({ state, changeState, FAQ }) => {
         <Overlay>
             <ContenedorAEFAQ>
                 <EncabezadoAEFAQ>
-                    {FAQ ? "Editar Pregunta frecuente": "Agregar Pergunta frecuente"}
+                    <BoldText>{FAQ ? "Editar Pregunta frecuente": "Agregar Pergunta frecuente"}</BoldText>
                 </EncabezadoAEFAQ>
                 <BotonCerrar onClick={() => changeState(false)}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">

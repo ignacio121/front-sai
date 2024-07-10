@@ -66,9 +66,6 @@ const Options = ({ categorias, categoriasHijo, destinatarios }) => {
   padding: 20px;
 `;
 
-const InputFile = styled.input`
-  display: none;
-`;
 const TabContent = styled.div`
   display: ${props => (props.active ? 'block' : 'none')};
 `;
@@ -373,15 +370,6 @@ const Textarea = styled.textarea`
   border-radius: 5px;
   border: 1px solid #ccc;
   margin-bottom: 10px;
-`;
-
-const Label = styled.label`
-  display: inline-block;
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
 `;
 
 const Menu = styled.div`
