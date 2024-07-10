@@ -296,6 +296,7 @@ const Dropdown = styled.div`
       `
   };
   padding-left: 3px;
+  margin-top: 5px;
 `;
 
 const UltimoMensaje = styled.div`

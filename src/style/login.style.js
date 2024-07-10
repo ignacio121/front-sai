@@ -19,6 +19,7 @@ export const Titulo = styled.h1`
     line-height: normal;
     position: absolute;
     top: 30px;
+    font-family: "Bahnschrift Bold", "Bahnschrift", sans-serif;
 `;
 
 export const ContenedorForm = styled.div`
@@ -42,6 +43,7 @@ export const LoginText = styled.h2`
     color: #1e98d7;
     font-size: 30px;
     position: absolute;
+    font-family: "Bahnschrift Bold", "Bahnschrift", sans-serif;
 `;
 
 export const Form = styled.form`
