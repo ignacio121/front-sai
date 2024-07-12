@@ -1,3 +1,4 @@
+
 # Usar una imagen de Node.js 20 como base
 FROM node:20
 
@@ -7,7 +8,6 @@ WORKDIR /usr/src/app
 # Copiar el package.json y el package-lock.json
 COPY package*.json ./
 
-# Instalar las dependencias
 RUN npm install
 
 # Copiar el resto de la aplicación
@@ -24,3 +24,4 @@ EXPOSE 3000
 
 # Comando para ejecutar la aplicación en producción
 CMD ["serve", "-s", "build", "-l", "3000"]
+
