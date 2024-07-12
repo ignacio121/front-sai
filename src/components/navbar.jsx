@@ -10,7 +10,7 @@ function NavBar({ children }) {
   const navigate = useNavigate();
 
   const [dropdowns, setDropdowns] = useState({
-    dropdown1: false,
+    dropdown1: true,
     dropdown2: false,
     dropdown3: false,
   });
@@ -79,7 +79,6 @@ function NavBar({ children }) {
           <Dropdown visible={dropdowns.dropdown1}>
             <Button onClick={() => handleButtonClick('incidencias', 'incidencias')}>Todas las incidencias</Button>
             <Button onClick={() => handleButtonClick('agenda', 'incidencias')}>Agenda</Button>
-            <Button onClick={() => handleButtonClick('agregarIncidencia', 'incidencias')}>Agregar incidencia</Button>
           </Dropdown>
           <Button onClick={() => handleButtonClick('preguntasFrecuentes', 'preguntasFrecuentes')} isSelected={isSelected.preguntasFrecuentes}>Preguntas frecuentes</Button>
           {/*

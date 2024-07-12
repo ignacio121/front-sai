@@ -42,7 +42,7 @@ function PersonalPage() {
       case 'preguntasFrecuentes':
         return <FAQPage/>
       default:
-        return <div>Seleccione una opción del menú</div>;
+        return <IncidenciasPage />;
     }
   };
 
