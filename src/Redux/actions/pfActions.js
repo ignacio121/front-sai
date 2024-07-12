@@ -46,7 +46,7 @@ export const fetchPreguntasFrecuentes = () => async (dispatch) => {
         break; // Salir del bucle en caso de error
       }
     }
-  console.log(responses)
+
     dispatch({
       type: PREGUNTAS_FRECUENTES_SUCCESS,
       payload: responses

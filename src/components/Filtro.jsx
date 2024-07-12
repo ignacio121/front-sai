@@ -303,4 +303,5 @@ const UltimoMensaje = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 1vh;
+  margin-bottom: 1vh;
 `;

@@ -20,6 +20,7 @@ import ProgressBar from './barProgress';
 import { useDispatch } from 'react-redux';
 import { postIncidencia } from '../Redux/actions/incidenciasActions';
 import IncidenciasPage from '../pages/personal/incidencias';
+import ForoEstudiante from './foro';
 
 // Iconos por categoría
 const iconsCategorias = {
@@ -35,6 +36,7 @@ const iconsCategorias = {
 const Options = ({ categorias, categoriasHijo, destinatarios }) => {
   const [showModal, setShowModal] = useState(false);
   const [showModal4, setShowModal4] = useState(false);
+  const [showModal3, setShowModal3] = useState(false);
   const [activeTab, setActiveTab] = useState(1);
   const [selected, setSelected] = useState(null);
   const [showNextButton, setShowNextButton] = useState(false);
@@ -62,6 +64,8 @@ const Options = ({ categorias, categoriasHijo, destinatarios }) => {
   const closeModal = () => setShowModal(false);
   const openModalStateIncident = () => setShowModal4(true);
   const closeModalStateIncident = () => setShowModal4(false);
+  const handleMostrarForo = () => setShowModal3(true);
+  const closeModalForo = () => setShowModal3(false);
   const ModalContent = styled.div`
   padding: 20px;
 `;
@@ -149,8 +153,6 @@ const TabContent = styled.div`
     setShowNextButton(false);
   };
 
-  const handleButtonClick = (action) => console.log(`Realizando acción: ${action}`);
-
   const handleBackButtonClick = () => {
     setActiveTab(activeTab - 1);
   };
@@ -180,11 +182,13 @@ const TabContent = styled.div`
       </Incidencia>
       
       {mostrarFAQ && <FAQComponent />} {/* Renderiza FAQComponent si mostrarFAQ es true */}
+
     </div>
-        <Incidencia color="#008ACB" onClick={() => handleButtonClick('foro_estudiantil')}>
+        <Incidencia color="#008ACB" onClick={handleMostrarForo}>
           <MdEdit size={26} color="white" style={{marginLeft:'3%'}} />
           <Text>Foro estudiantil</Text>
         </Incidencia>
+
 
         <Incidencia color="#00A1E4" onClick={() => openModalStateIncident()}>
           <MdTask size={26} color="white" style={{marginLeft:'3%'}} />
@@ -343,6 +347,9 @@ const TabContent = styled.div`
       </Modal>
       <Modal show={showModal4} onClose={closeModalStateIncident} title="Estado de incidencias" styled={{width: '100px'}}>
         <IncidenciasPage></IncidenciasPage>
+      </Modal>
+      <Modal show={showModal3} onClose={closeModalForo} title="Foro" styled={{width: '100px'}}>
+        <ForoEstudiante/>
       </Modal>
 
     </div>
@@ -512,7 +519,7 @@ const Overlay = styled.div`
 
 const ContenedorModal = styled.div`
   width: auto;
-  min-width: 50%;
+  min-width: 620px;
   height: auto;
   max-height: 90%;
   background: #fff;
@@ -523,7 +530,6 @@ const ContenedorModal = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: auto;
   box-sizing: border-box;
 `;
     
@@ -580,9 +586,10 @@ const BotonCerrar = styled.button`
     
     const ContenidoModal = styled.div`
       display: flex;
-      justify-content: center;
       align-items: center;
       flex-direction: column;
+      overflow: auto;
+      width:100%;
     `;
     
     export {
